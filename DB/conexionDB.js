@@ -1,5 +1,7 @@
 import knexLib from 'knex'
 
+
+
 function crearConexion(){
     const knex = knexLib({
         client: 'mssql',
@@ -18,7 +20,10 @@ function crearConexion(){
 
     return knex
     
+    
 }
+
+
 
 export default crearConexion
 
