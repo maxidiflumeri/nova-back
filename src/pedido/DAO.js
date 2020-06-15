@@ -1,29 +1,39 @@
-import crearConexion from '../../DB/conexionDB.js'
+import crearConexion from '../../db/conexionDB.js'
+import sql from "mssql";
 
-const knex = crearConexion()
+const conn = crearConexion()
+
+const tablaCab = 'PEDIDOS_CAB'
+const tablaDet = 'PEDIDOS_DET'
 
 async function obtenerTodos() {  
-    let lista = []  
-    try {
-        lista = await knex.select().from('[novadb].[dbo].[PEDIDOS_CAB]')
-        console.log(lista)
+    await conn.connect()
+    let lista = []
+    try{        
+        var req = new sql.Request(conn)            
+        lista =  await req.query(`SELECT * FROM ${tablaCab}`)
+        conn.close()
     }
-    catch(error) {
+    catch(error){
         console.log(error)
+        conn.close()
     }
-    return lista
-}  
+    return lista.recordset    
+}
 
 async function obtenerDetalles(id) {  
+    await conn.connect()
     let lista = []  
     try {
-        lista = await knex.select().from('[novadb].[dbo].[PEDIDOS_DET]').where('ID_PEDIDO','=',id)
-        console.log(lista)
+        var req = new sql.Request(conn)            
+        lista =  await req.query(`SELECT * FROM ${tablaDet} where id_pedido = ${id}`)
+        conn.close()
     }
     catch(error) {
         console.log(error)
+        conn.close()
     }
-    return lista
+    return lista.recordset
 } 
 
 

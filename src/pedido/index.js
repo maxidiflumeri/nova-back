@@ -5,8 +5,7 @@ import _ from 'underscore'
 const router = express.Router()
 
 router.get('/', (req, res) => {
-    let resultado = null   
-    console.log(req.query)
+    let resultado = null       
     if(_.isEmpty(req.query)){           
         dao.obtenerTodos().then(lista =>{
             resultado = lista

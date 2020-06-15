@@ -1,18 +1,26 @@
 import crearConexion from '../../db/conexionDB.js'
+import sql from "mssql";
 
-const knex = crearConexion()
+const conn = crearConexion()
+
+const tabla = 'TIPOS_PRODUCTO'
 
 async function obtenerTodos() {  
-    let lista = []  
-    try {
-        lista = await knex.select().from('[novadb].[dbo].[TIPO_PRODUCTO]')
-        console.log(lista)        
+    await conn.connect()
+    let lista = []
+    try{        
+        var req = new sql.Request(conn)            
+        lista =  await req.query(`SELECT * FROM ${tabla}`)
+        conn.close()
     }
-    catch(error) {
+    catch(error){
         console.log(error)
+        conn.close()
     }
-    return lista
-}   
+    return lista.recordset    
+}
+
+
 
 export default{
     obtenerTodos

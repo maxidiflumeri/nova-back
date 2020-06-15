@@ -1,25 +1,24 @@
-import knexLib from 'knex'
-
+import sql from "mssql";
 
 
 function crearConexion(){
-    const knex = knexLib({
-        client: 'mssql',
-        connection: {
-            server: '127.0.0.1',   
-            user: 'sa',
-            password: '1234',
-            options:{
-                port: 1433,
-                database: 'novadb',
-                encrypt: true,
-                enableArithAbort: true
-            }
-        }        
-    })
-    return knex           
-}
+    var dbConfig = {
+    server: "srvnova.database.windows.net", 
+    database: "nova-db",
+    user: "nova", 
+    password: "Nov42020", 
+    port: 1433,
 
+    options: {
+        encrypt: true,
+        enableArithAbort: true
+    }
+    };
+
+    var conn = new sql.ConnectionPool(dbConfig);    
+
+    return conn
+}
 
 
 export default crearConexion
