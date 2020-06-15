@@ -8,7 +8,7 @@ async function obtenerTodos() {
     let lista = []  
     try {
         lista = await knex.select().from('[novadb].[dbo].[ESTADOS]')
-        console.log(lista)        
+        console.log(lista)               
     }
     catch(error) {
         console.log(error)

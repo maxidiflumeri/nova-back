@@ -3,16 +3,15 @@ import crearConexion from '../../db/conexionDB.js'
 const knex = crearConexion()
 
 async function obtenerTodos() {  
-    let listaPedidos = []  
+    let lista = []  
     try {
-        listaPedidos = await knex.select().from('[novadb].[dbo].[TIPO_PRODUCTO]')
-        console.log(listaPedidos)
-        knex.destroy()
+        lista = await knex.select().from('[novadb].[dbo].[TIPO_PRODUCTO]')
+        console.log(lista)        
     }
     catch(error) {
         console.log(error)
     }
-    return listaPedidos
+    return lista
 }   
 
 export default{

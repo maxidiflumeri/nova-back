@@ -17,10 +17,7 @@ function crearConexion(){
             }
         }        
     })
-
-    return knex
-    
-    
+    return knex           
 }
 
 
