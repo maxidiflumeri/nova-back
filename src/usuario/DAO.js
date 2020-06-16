@@ -10,6 +10,7 @@ async function obtenerTodos() {
         lista = await conn.select().from(tabla)
         conn.destroy()
         //Prueba uno!
+        //Prueba 2!
     }
     catch(error){
         console.log(error)
