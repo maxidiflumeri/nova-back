@@ -65,29 +65,35 @@ async function obtenerPedidosPorUsuario(id) {
 }
 
 async function agregarPedido(pedido){
+
     let fecha_ob = new Date();
     let dia = ("0" + fecha_ob.getDate()).slice(-2);
     let mes = ("0" + (fecha_ob.getMonth() + 1)).slice(-2);
     let anio = fecha_ob.getFullYear();
     let fechaAct = anio + "-" + mes + "-" + dia
-    console.log(fechaAct)        
+            
     pedido["fecha"] = fechaAct
-    console.log(pedido)
+    
     const conn = crearConexion()
-    let pedidoRet = null
+    let resultado = null
     if(validarPedido(pedido)){
         try{            
-            pedidoRet = await conn.insert(pedido).into(tablaCab)
+            resultado = await conn.insert(pedido).into(tablaCab)
             conn.destroy()
         }
         catch(error){
             console.log(error)
             conn.destroy()
         }
-        console.log(pedidoRet)
-        return pedidoRet
+        console.log(resultado)
+    }else{
+        resultado = {            
+            "error": 400,
+            "msg": "Body Incorrecto."            
+        }
     }
 
+    return resultado
 }
 
 
