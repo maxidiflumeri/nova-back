@@ -1,5 +1,6 @@
 import crearConexion from '../../db/conexionDB.js'
-import sql from "mssql";
+//import sql from "mssql"
+//DEV BY EZE LABORANTI
 
 const tabla = 'TIPOS_PRODUCTO'
 
