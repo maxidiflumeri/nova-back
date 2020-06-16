@@ -11,6 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@hapi/joi": "^15.0.2",
     "express": "^4.17.1",
     "knex": "^0.21.1",
     "mssql": "^6.2.0",

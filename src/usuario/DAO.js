@@ -1,23 +1,20 @@
 import crearConexion from '../../db/conexionDB.js'
 import sql from "mssql";
 
-const conn = crearConexion()
-
 const tabla = 'USUARIOS'
 
 async function obtenerTodos() {  
-    await conn.connect()
+    const conn = crearConexion()
     let lista = []
     try{        
-        var req = new sql.Request(conn)            
-        lista =  await req.query(`SELECT * FROM ${tabla}`)
-        conn.close()
+        lista = await conn.select().from(tabla)
+        conn.destroy()
     }
     catch(error){
         console.log(error)
-        conn.close()
+        conn.destroy()
     }
-    return lista.recordset    
+    return lista  
 }
 
 
