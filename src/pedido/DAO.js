@@ -1,18 +1,15 @@
 import crearConexion from '../../db/conexionDB.js'
-import sql from "mssql";
 import Joi from '@hapi/joi'
-
-
-
-
 const tablaCab = 'PEDIDOS_CAB'
 const tablaDet = 'PEDIDOS_DET'
+
 
 async function obtenerTodos() {     
     const conn = crearConexion()
     let lista = []
     try{ 
         lista = await conn.select().from(tablaCab)
+        console.log(pedidoNew)
         conn.destroy()
     }
     catch(error){
@@ -64,21 +61,46 @@ async function obtenerPedidosPorUsuario(id) {
     return lista
 }
 
-async function agregarPedido(pedido){
+async function agregarPedido(pedidoCompleto){
 
-    let fecha_ob = new Date();
-    let dia = ("0" + fecha_ob.getDate()).slice(-2);
-    let mes = ("0" + (fecha_ob.getMonth() + 1)).slice(-2);
-    let anio = fecha_ob.getFullYear();
-    let fechaAct = anio + "-" + mes + "-" + dia
-            
-    pedido["fecha"] = fechaAct
+    const pedidoCab = {
+        "id_usuario": pedidoCompleto.id_usuario,
+        "id_direccion":  pedidoCompleto.id_direccion,
+        "fecha": obtenerFecha(),
+        "importe_total": pedidoCompleto.importe_total,
+        "id_estado": pedidoCompleto.id_estado
+    }
+
+    const listaProductos = []
+    let impTotal = 0
+    for (let i = 0; i < pedidoCompleto.productos.length; i++) {
+        let impParcial = 0        
+        const prod = pedidoCompleto.productos[i];
+        const pedidoDet = {
+            "id_producto": prod.id_producto,
+            "cantidad": prod.cantidad,
+            "importe_unitario": prod.importe_unitario
+        } 
+        impParcial = pedidoDet.cantidad * pedidoDet.importe_unitario
+        impTotal = impTotal + impParcial
+        listaProductos.push(pedidoDet)         
+    }
+    
+    pedidoCab.importe_total = impTotal
+
     
     const conn = crearConexion()
     let resultado = null
-    if(validarPedido(pedido)){
+    if(validarPedidoCab(pedidoCab) && validarPedidoDet(listaProductos)){
         try{            
-            resultado = await conn.insert(pedido).into(tablaCab)
+            resultado = await conn.insert(pedidoCab).into(tablaCab)
+            const pedidoNew = await conn.max({ id_pedido: 'id_pedido' }).from(tablaCab).where('id_usuario','=',pedidoCab.id_usuario)
+            const idPedido = pedidoNew[0].id_pedido  
+
+            for (let i = 0; i < listaProductos.length; i++) {                
+                listaProductos[i]["id_pedido"] = idPedido;                
+                await conn.insert(listaProductos[i]).into(tablaDet)                                                
+            }                      
             conn.destroy()
         }
         catch(error){
@@ -97,7 +119,7 @@ async function agregarPedido(pedido){
 }
 
 
-function validarPedido(pedido) {
+function validarPedidoCab(pedido) {
 
         
     const pedidoSchema = {         
@@ -110,11 +132,44 @@ function validarPedido(pedido) {
 
     const { error } = Joi.validate(pedido, pedidoSchema)
     if (error) {
-        console.log('error validate')
+        console.log('error validate cab')
         return false        
     }
-    console.log('Correcto validate')
+    console.log('Correcto validate cab')
     return true
+}
+
+
+function validarPedidoDet(productos) {
+        
+    const productosSchema = {                 
+        id_producto: Joi.number().required(),
+        cantidad: Joi.number().required(),
+        importe_unitario: Joi.number().required()
+    }
+
+    for (let i = 0; i < productos.length; i++) {
+        const prod = productos[i];
+        const { error } = Joi.validate(prod, productosSchema)
+        if (error) {
+            console.log('error validate det')
+            return false        
+        }        
+    }
+    console.log('Correcto validate det')
+    return true
+}
+
+function obtenerFecha(){
+
+    let fecha_ob = new Date();
+    let dia = ("0" + fecha_ob.getDate()).slice(-2);
+    let mes = ("0" + (fecha_ob.getMonth() + 1)).slice(-2);
+    let anio = fecha_ob.getFullYear();
+    let fechaAct = anio + "-" + mes + "-" + dia
+
+    return fechaAct
+
 }
 
 export default{
@@ -124,4 +179,5 @@ export default{
     obtenerPedidosPorUsuario,
     agregarPedido
 }
+
 
