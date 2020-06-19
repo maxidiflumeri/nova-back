@@ -63,30 +63,9 @@ async function obtenerPedidosPorUsuario(id) {
 
 async function agregarPedido(pedidoCompleto){
 
-    const pedidoCab = {
-        "id_usuario": pedidoCompleto.id_usuario,
-        "id_direccion":  pedidoCompleto.id_direccion,
-        "fecha": obtenerFecha(),
-        "importe_total": pedidoCompleto.importe_total,
-        "id_estado": pedidoCompleto.id_estado
-    }
+    const pedidoCab = separarPedido(pedidoCompleto)
 
-    const listaProductos = []
-    let impTotal = 0
-    for (let i = 0; i < pedidoCompleto.productos.length; i++) {
-        let impParcial = 0        
-        const prod = pedidoCompleto.productos[i];
-        const pedidoDet = {
-            "id_producto": prod.id_producto,
-            "cantidad": prod.cantidad,
-            "importe_unitario": prod.importe_unitario
-        } 
-        impParcial = pedidoDet.cantidad * pedidoDet.importe_unitario
-        impTotal = impTotal + impParcial
-        listaProductos.push(pedidoDet)         
-    }
-    
-    pedidoCab.importe_total = impTotal
+    const listaProductos = separarListaProductos(pedidoCompleto, pedidoCab)
 
     
     const conn = crearConexion()
@@ -158,6 +137,43 @@ function validarPedidoDet(productos) {
     }
     console.log('Correcto validate det')
     return true
+}
+
+function separarPedido(pedidoCompleto){
+
+    let pedidoCab = {
+        "id_usuario": pedidoCompleto.id_usuario,
+        "id_direccion":  pedidoCompleto.id_direccion,
+        "fecha": obtenerFecha(),
+        "importe_total": pedidoCompleto.importe_total,
+        "id_estado": pedidoCompleto.id_estado
+    }
+
+    return pedidoCab
+
+}
+
+function separarListaProductos(pedidoCompleto, pedidoCab){
+
+    let impTotal = 0
+    let listaProductos = []
+    for (let i = 0; i < pedidoCompleto.productos.length; i++) {
+        let impParcial = 0        
+        const prod = pedidoCompleto.productos[i];
+        const pedidoDet = {
+            "id_producto": prod.id_producto,
+            "cantidad": prod.cantidad,
+            "importe_unitario": prod.importe_unitario
+        } 
+        impParcial = pedidoDet.cantidad * pedidoDet.importe_unitario
+        impTotal = impTotal + impParcial
+        listaProductos.push(pedidoDet)         
+    }  
+
+    pedidoCab.importe_total = impTotal
+
+    return listaProductos
+
 }
 
 function obtenerFecha(){
