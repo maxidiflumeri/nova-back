@@ -105,7 +105,7 @@ function validarPedidoCab(pedido) {
         id_usuario: Joi.number().required(),
         id_direccion: Joi.number().required(),
         importe_total: Joi.number().required(),
-        id_estado: Joi.number().required(),
+        id_estado: Joi.string().required(),
         fecha: Joi.string().required()
     }
 
