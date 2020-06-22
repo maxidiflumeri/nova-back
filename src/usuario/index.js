@@ -11,4 +11,11 @@ router.get('/', (req, res) => {
     })                         
 })
 
+router.post('/', (req, res) => {
+    let resultado = null   
+    dao.agregarUsuario(req.body).then(lista =>{
+        resultado = lista
+        res.send(resultado)  
+    })                         
+})
 export default router
