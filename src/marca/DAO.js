@@ -23,18 +23,24 @@ async function agregar(objeto) {
     const conn = crearConexion()
     let resultado = null
     if (validar(objeto)) {
-        try {
-            await conn.insert(objeto).into(tabla)
-            resultado = {
-                "msg": "Objeto agregado."
+        if (!await esDuplicado(objeto)) {
+            try {
+                await conn.insert(objeto).into(tabla)
+                resultado = {
+                    "msg": "Objeto agregado."
+                }
+                conn.destroy()
             }
-            conn.destroy()
+            catch (error) {
+                resultado = error;
+                conn.destroy()
+            }
         }
-        catch (error) {
-            console.log(error)
-            conn.destroy()
+        else {
+            resultado = {
+                "msg": "Claves duplicadas"
+            }
         }
-        console.log(resultado)
     } else {
         resultado = {
             "error": 400,
@@ -57,6 +63,29 @@ function validar(objeto) {
     }
     console.log('Correcto validate')
     return true
+}
+
+async function esDuplicado(objeto) {
+    const conn = crearConexion()
+    let esDuplicado = false
+    let registro = null
+
+    try {
+        registro = await conn.select().from(tabla).where('descripcion', '=', objeto.descripcion)
+        conn.destroy()
+    }
+    catch (error) {
+        console.log(error)
+        conn.destroy()
+    }
+
+    if (registro.length > 0) {
+        esDuplicado = true
+    }
+
+    console.log(registro)
+    console.log('Claves duplicadas: ' + esDuplicado)
+    return esDuplicado
 }
 
 export default {
