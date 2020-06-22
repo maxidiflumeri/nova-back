@@ -8,8 +8,7 @@ async function obtenerTodos() {
     const conn = crearConexion()
     let lista = []
     try{ 
-        lista = await conn.select().from(tablaCab)
-        console.log(pedidoNew)
+        lista = await conn.select().from(tablaCab)       
         conn.destroy()
     }
     catch(error){
