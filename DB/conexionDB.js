@@ -1,4 +1,4 @@
-import sql from "mssql";
+//import sql from "mssql"
 import knexLib from 'knex'
 
 function crearConexion(){
@@ -19,10 +19,4 @@ function crearConexion(){
     return knex
 }
 
-
 export default crearConexion
-
-
-
-
-
