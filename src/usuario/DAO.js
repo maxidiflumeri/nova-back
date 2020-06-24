@@ -50,6 +50,7 @@ async function agregarUsuario(usuario){
             const idUsuario = usuarioNew[0].id_usuario
             for (let i = 0; i < telefonos.length; i++) {
                 telefonos[i]["id_usuario"] = idUsuario
+                console.log(telefonos[i])
                 await conn.insert(telefonos[i]).into(tablaTel)
             }
 
@@ -94,10 +95,12 @@ function separarTelefonos(usuario) {
     const listaTelefonos = []
     for (let i = 0; i < usuario.telefonos.length; i++) { 
         const nroTel = {
+            "telefono": usuario.telefonos[i].telefono,
             "descripcion": usuario.telefonos[i].descripcion
         }
         listaTelefonos.push(nroTel)         
     }
+    console.log(listaTelefonos)
     return listaTelefonos
 }
 
@@ -143,7 +146,8 @@ function validarUsuario(usuario) {
 
 function validarTelefonos(telefonos){
     const telefonoSchema = {
-        descripcion: Joi.string().min(9).max(13),
+        telefono: Joi.number().required(),
+        descripcion: Joi.string(),
     }
     for (let i = 0; i < telefonos.length; i++) {
         const tel = telefonos[i];
