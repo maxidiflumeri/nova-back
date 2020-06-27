@@ -1,4 +1,4 @@
-import crearConexion from '../../db/conexionDB.js'
+import getConexion from '../../db/conexionDB.js'
 import sql from "mssql";
 import Joi from '@hapi/joi'
 
@@ -6,15 +6,15 @@ const tabla = 'PRODUCTOS'
 
 
 async function obtenerTodos() {
-    const conn = crearConexion()
+    const conn = getConexion()
     let lista = []
     try {
         lista = await conn.select().from(tabla)
-        conn.destroy()
+        
     }
     catch (error) {
         console.log(error)
-        conn.destroy()
+        
     }
     return lista
 }
@@ -29,7 +29,7 @@ async function agregarProducto(producto) {
     producto["FECHA_INGRESO"] = fechaAct
 
 
-    const conn = crearConexion()
+    const conn = getConexion()
     let resultado = null
     if (validarProducto(producto)) {
         try {
@@ -37,11 +37,11 @@ async function agregarProducto(producto) {
             resultado = {
                 "msg": "Producto Agregado correctamente."
             }
-            conn.destroy()
+            
         }
         catch (error) {
             console.log(error)
-            conn.destroy()
+            
         }
         console.log(resultado)
     } else {
@@ -55,59 +55,59 @@ async function agregarProducto(producto) {
 }
 
 async function obtenerProductoPorId(id) {
-    const conn = crearConexion()
+    const conn = getConexion()
     let lista = []
     try {
         lista = await conn.select().from(tabla).where('ID_PRODUCTO', '=', id)
-        conn.destroy()
+       
     }
     catch (error) {
         console.log(error)
-        conn.destroy()
+     
     }
     return lista
 }
 
 async function obtenerProductoPorIdMarca(id) {
-    const conn = crearConexion()
+    const conn = getConexion()
     let lista = []
     try {
         lista = await conn.select().from(tabla).where('ID_MARCA', '=', id)
-        conn.destroy()
+      
     }
     catch (error) {
         console.log(error)
-        conn.destroy()
+       
     }
     return lista
 }
 
 async function obtenerProductoPorIdTipo(id) {
-    const conn = crearConexion()
+    const conn = getConexion()
     let lista = []
     try {
         lista = await conn.select().from(tabla).where('ID_TIPO', '=', id)
-        conn.destroy()
+        
     }
     catch (error) {
         console.log(error)
-        conn.destroy()
+        
     }
     return lista
 }
 
 
 async function obtenerProductoPorDescripcion(id) {
-    const conn = crearConexion()
+    const conn = getConexion()
     let lista = []
     try {
         lista = await conn.select().from(tabla).where('DESCRIPCION', '=', id)
-        conn.destroy()
+        
         console.log(lista)
     }
     catch (error) {
         console.log(error)
-        conn.destroy()
+      
     }
     return lista
 }
@@ -143,7 +143,7 @@ function validarProducto(producto) {
 }
 
 async function eliminarProductoById(id) {
-    const conn = crearConexion()
+    const conn = getConexion()
     let lista = []
     lista = await conn.select().from(tabla)
     const posBuscada = lista.findIndex(p => p.id == id)
@@ -151,7 +151,6 @@ async function eliminarProductoById(id) {
         throw crearError(404, 'producto no encontrado con ese ID')
     }
     lista.splice(posBuscada, 1)
-    conn.destroy()
     console.log(lista)
     return lista
 }
