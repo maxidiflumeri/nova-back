@@ -1,5 +1,7 @@
-import crearConexion from '../../db/conexionDB.js'
+import getConexion from '../../db/conexionDB.js'
 import Joi from '@hapi/joi'
+import msj from '../mensajes/mensajes.js'
+
 
 const tabla = 'USUARIOS'
 const tablaTel = 'TELEFONOS'
@@ -10,58 +12,57 @@ const tablaDir = 'DIRECCIONES'
 ------------------------------- */
 
 async function obtenerTodos() {  
-    const conn = crearConexion()
+    const conn = getConexion()
     let lista = []
     try{        
         lista = await conn.select().from(tabla)
-        conn.destroy()
     }
     catch(error){
         console.log(error)
-        conn.destroy()
     }
     return lista  
 }
 
 async function obtenerUsuarioPorId(id) {  
-    const conn = crearConexion()
+    const conn = getConexion()
     let lista = []
     try{         
         lista =  await conn.select().from(tabla).where('id_usuario','=',id)
-        conn.destroy()
     }
     catch(error){
         console.log(error)
-        conn.destroy()
     }
     return lista    
 }
 
 async function agregarUsuario(usuario){
-    const conn = crearConexion()
+    const conn = getConexion()
     let resultado = null
     const usuarioFin = separarUsuario(usuario)
     const telefonos = separarTelefonos(usuario)
     const direccion = separarDireccion(usuario)
     if(validarUsuario(usuarioFin) && validarTelefonos(telefonos) && validarDireccion(direccion)){
-        try{            
-            resultado = await conn.insert(usuarioFin).into(tabla)
-            const usuarioNew = await conn.max({ id_usuario: 'id_usuario' }).from(tabla).where('id_usuario','=',usuarioFin.id_usuario)
-            const idUsuario = usuarioNew[0].id_usuario
-            for (let i = 0; i < telefonos.length; i++) {
-                telefonos[i]["id_usuario"] = idUsuario
-                await conn.insert(telefonos[i]).into(tablaTel)
+        if(!await esDuplicado(usuarioFin)){
+            try{            
+                resultado = await conn.insert(usuarioFin).into(tabla)
+                const usuarioNew = await conn.max({ id_usuario: 'id_usuario' }).from(tabla).where('id_usuario','=',usuarioFin.id_usuario)
+                const idUsuario = usuarioNew[0].id_usuario
+                for (let i = 0; i < telefonos.length; i++) {
+                    telefonos[i]["id_usuario"] = idUsuario
+                    await conn.insert(telefonos[i]).into(tablaTel)
+                }
+
+                await conn.insert(direccion).into(tablaDir)
+
             }
-
-            await conn.insert(direccion).into(tablaDir)
-
-            conn.destroy()
+            catch(error){
+                console.log(error)
+            }
         }
-        catch(error){
-            console.log(error)
-            conn.destroy()
+        else{
+            console.log("Estado: " + msj.errorDuplicados().estado)
+            console.log("Mesaje: " + msj.errorDuplicados().mensaje)
         }
-        console.log(resultado)
     }else{
         resultado = {            
             "error": 400,
@@ -94,6 +95,7 @@ function separarTelefonos(usuario) {
     const listaTelefonos = []
     for (let i = 0; i < usuario.telefonos.length; i++) { 
         const nroTel = {
+            "telefono": usuario.telefonos[i].telefono,
             "descripcion": usuario.telefonos[i].descripcion
         }
         listaTelefonos.push(nroTel)         
@@ -143,7 +145,8 @@ function validarUsuario(usuario) {
 
 function validarTelefonos(telefonos){
     const telefonoSchema = {
-        descripcion: Joi.string().min(9).max(13),
+        telefono: Joi.number().required(),
+        descripcion: Joi.string(),
     }
     for (let i = 0; i < telefonos.length; i++) {
         const tel = telefonos[i];
@@ -153,7 +156,7 @@ function validarTelefonos(telefonos){
             return false        
         } 
     }
-    console.log('Correcto validar telefonos')
+    console.log('Telefonos valido')
     return true
 }
 
@@ -176,8 +179,26 @@ function validarDireccion(direcciones){
         return false        
     } 
     
-    console.log('Correcto validar direcciones')
+    console.log('Direccion valida')
     return true
+}
+
+async function esDuplicado(usuario){
+    const conn = getConexion()
+    let esDuplicado = false
+    let registro = null
+
+    try {
+        registro = await conn.select().from(tabla).where('id_usuario', '=', usuario.id_usuario)
+    }
+    catch (error) {
+        console.log(error)
+    }
+
+    if (registro.length > 0) {
+        esDuplicado = true
+    }
+    return esDuplicado
 }
 export default{
     obtenerTodos,
