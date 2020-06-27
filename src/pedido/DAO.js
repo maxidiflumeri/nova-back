@@ -1,61 +1,63 @@
-import crearConexion from '../../db/conexionDB.js'
+import getConexion from '../../db/conexionDB.js'
 import Joi from '@hapi/joi'
+import msj from '../mensajes/mensajes.js'
+import prod from '../producto/dao.js'
+
+
 const tablaCab = 'PEDIDOS_CAB'
 const tablaDet = 'PEDIDOS_DET'
 
 
 async function obtenerTodos() {     
-    const conn = crearConexion()
+    const conn = getConexion()    
     let lista = []
     try{ 
+<<<<<<< HEAD
         lista = await conn.select().from(tablaCab)       
         conn.destroy()
+=======
+        lista = await conn.select().from(tablaCab)      
+                    
+>>>>>>> Maxi
     }
     catch(error){
         console.log(error)
-        conn.destroy()
     }
     return lista  
 }
 
 async function obtenerDetalles(id) {  
-    const conn = crearConexion()
+    const conn = getConexion()
     let lista = []  
     try {                   
         lista = await conn.select().from(tablaDet).where('id_pedido','=',id)
-        conn.destroy()
     }
     catch(error) {
         console.log(error)
-        conn.destroy()
     }
     return lista
 } 
 
 async function obtenerPedidoPorId(id) {  
-    const conn = crearConexion()
+    const conn = getConexion()
     let lista = []
     try{         
         lista =  await conn.select().from(tablaCab).where('id_pedido','=',id)
-        conn.destroy()
     }
     catch(error){
         console.log(error)
-        conn.destroy()
     }
     return lista    
 }
 
 async function obtenerPedidosPorUsuario(id) {      
-    const conn = crearConexion()
+    const conn = getConexion()
     let lista = []
     try{
         lista =  await conn.select().from(tablaCab).where('id_usuario','=',id)
-        conn.destroy()
     }
     catch(error){
         console.log(error)
-        conn.destroy()
     }
     return lista
 }
@@ -63,42 +65,102 @@ async function obtenerPedidosPorUsuario(id) {
 async function agregarPedido(pedidoCompleto){
 
     const pedidoCab = separarPedido(pedidoCompleto)
-
-    const listaProductos = separarListaProductos(pedidoCompleto, pedidoCab)
-
+    const listaProductos = await separarListaProductos(pedidoCompleto, pedidoCab)
     
-    const conn = crearConexion()
-    let resultado = null
-    if(validarPedidoCab(pedidoCab) && validarPedidoDet(listaProductos)){
-        try{            
-            resultado = await conn.insert(pedidoCab).into(tablaCab)
-            const pedidoNew = await conn.max({ id_pedido: 'id_pedido' }).from(tablaCab).where('id_usuario','=',pedidoCab.id_usuario)
-            const idPedido = pedidoNew[0].id_pedido  
+    const conn = getConexion()
+    let resultado = null    
+    if(listaProductos.length == 0){        
+        resultado = msj.mensajeCustom(404, "Productos inexistentes en la lista")
+    }else if(validarPedidoCab(pedidoCab) && validarPedidoDet(listaProductos)){
+            try{            
+                resultado = await conn.insert(pedidoCab).into(tablaCab)
+                const pedidoNew = await conn.max({ id_pedido: 'id_pedido' }).from(tablaCab).where('id_usuario','=',pedidoCab.id_usuario)
+                const idPedido = pedidoNew[0].id_pedido  
 
-            for (let i = 0; i < listaProductos.length; i++) {                
-                listaProductos[i]["id_pedido"] = idPedido;                
-                await conn.insert(listaProductos[i]).into(tablaDet)                                                
-            }                      
-            conn.destroy()
-        }
-        catch(error){
-            console.log(error)
-            conn.destroy()
-        }
-        console.log(resultado)
+                for (let i = 0; i < listaProductos.length; i++) {                
+                    listaProductos[i]["id_pedido"] = idPedido;                
+                    await conn.insert(listaProductos[i]).into(tablaDet)                                                
+                }  
+                resultado = msj.mensajePost()                    
+            }
+            catch(error){
+                console.log(error)                
+            }         
     }else{
-        resultado = {            
-            "error": 400,
-            "msg": "Body Incorrecto."            
-        }
+        resultado = msj.errorBody()
     }
+    
 
     return resultado
 }
 
+async function modificarPedido(id, pedidoCompleto){
+
+    const pedidoCab = separarPedido(pedidoCompleto)
+    const listaProductos = await separarListaProductos(pedidoCompleto, pedidoCab)
+    const conn = getConexion()
+    let resultado = null
+    if(listaProductos.length == 0){        
+        resultado = msj.mensajeCustom(404, "Productos inexistentes en la lista")
+    }else if(validarPedidoCab(pedidoCab) && validarPedidoDet(listaProductos)){
+        try{            
+            if(await eliminarDetallesPorId(id) > 0){
+                console.log("entre despues del eliminar los detalles")
+                await conn.update(pedidoCab).where('Id_pedido','=',id).from(tablaCab)
+                
+                for (let i = 0; i < listaProductos.length; i++) {
+                    listaProductos[i]["id_pedido"] = id;
+                    const prodDetalle = listaProductos[i];
+                    await conn.insert(prodDetalle).into(tablaDet)                    
+                } 
+                resultado = msj.mensajeCustom(200, "Pedido modificado Exitosamente")    
+            }else{
+                resultado = msj.mensajeCustom(400, "Producto no encontrado en el pedido")
+            }
+        }
+        catch(error){
+            console.log(error)
+        }
+    }
+
+    return resultado
+
+}
+
+async function eliminarPedido(id) {
+    const conn = getConexion()
+    let resultado = null
+    let pedidoBuscado = await obtenerPedidoPorId(id)
+    let detalleBuscado = await obtenerDetalles(id)
+    if(pedidoBuscado.length > 0 && detalleBuscado.length > 0){
+        let existeDet 
+        let existeCab
+        try {
+            existeDet = await conn.del().where('ID_PEDIDO', '=', id).from(tablaDet)
+            existeCab = await conn.del().where('ID_PEDIDO', '=', id).from(tablaCab) 
+            if (existeDet > 0 && existeCab == 1) {
+                resultado = msj.mensajeDelete()
+            }
+        }
+        catch (error) {
+            console.log(error)
+        }
+    }else{
+        resultado = msj.mensajeCustom(404, "Pedido o detalle del pedido no encontrado.")
+    }    
+
+    return resultado
+}
+
+async function eliminarDetallesPorId(id){
+    const conn = getConexion()
+    console.log("el id es: "+id)
+    let cantBorrados = await conn.del().where('ID_PEDIDO', '=', id).from(tablaDet)    
+    console.log("borrados: "+ cantBorrados)
+    return cantBorrados
+}
 
 function validarPedidoCab(pedido) {
-
         
     const pedidoSchema = {         
         id_usuario: Joi.number().required(),
@@ -109,11 +171,11 @@ function validarPedidoCab(pedido) {
     }
 
     const { error } = Joi.validate(pedido, pedidoSchema)
-    if (error) {
-        console.log('error validate cab')
+    if (error) {      
+        console.log("error validate pedido cab")  
         return false        
-    }
-    console.log('Correcto validate cab')
+    }    
+    console.log("ok validate pedido cab")
     return true
 }
 
@@ -129,12 +191,12 @@ function validarPedidoDet(productos) {
     for (let i = 0; i < productos.length; i++) {
         const prod = productos[i];
         const { error } = Joi.validate(prod, productosSchema)
-        if (error) {
-            console.log('error validate det')
+        if (error) {   
+            console.log("error validate pedido det")           
             return false        
         }        
-    }
-    console.log('Correcto validate det')
+    }    
+    console.log("ok validate pedido det")
     return true
 }
 
@@ -143,7 +205,7 @@ function separarPedido(pedidoCompleto){
     let pedidoCab = {
         "id_usuario": pedidoCompleto.id_usuario,
         "id_direccion":  pedidoCompleto.id_direccion,
-        "fecha": obtenerFecha(),
+        "fecha": pedidoCompleto.fecha,
         "importe_total": pedidoCompleto.importe_total,
         "id_estado": pedidoCompleto.id_estado
     }
@@ -152,27 +214,36 @@ function separarPedido(pedidoCompleto){
 
 }
 
-function separarListaProductos(pedidoCompleto, pedidoCab){
+async function separarListaProductos(pedidoCompleto, pedidoCab){
 
     let impTotal = 0
     let listaProductos = []
-    for (let i = 0; i < pedidoCompleto.productos.length; i++) {
+    let i = 0
+    let faltaProducto = 0
+
+    while(i < pedidoCompleto.productos.length && faltaProducto == 0){
         let impParcial = 0        
-        const prod = pedidoCompleto.productos[i];
-        const pedidoDet = {
-            "id_producto": prod.id_producto,
-            "cantidad": prod.cantidad,
-            "importe_unitario": prod.importe_unitario
-        } 
-        impParcial = pedidoDet.cantidad * pedidoDet.importe_unitario
-        impTotal = impTotal + impParcial
-        listaProductos.push(pedidoDet)         
-    }  
-
-    pedidoCab.importe_total = impTotal
-
+        const producto = pedidoCompleto.productos[i]; 
+        let productoBuscado = await prod.obtenerProductoPorId(producto.id_producto)       
+        if(productoBuscado.length == 0){
+            faltaProducto = 1            
+        }else{                
+            const pedidoDet = {
+                "id_producto": producto.id_producto,
+                "cantidad": producto.cantidad,
+                "importe_unitario": productoBuscado[0].PRECIO
+            }
+            impParcial = pedidoDet.cantidad * pedidoDet.importe_unitario
+            impTotal = impTotal + impParcial        
+            listaProductos.push(pedidoDet) 
+        }
+        i++       
+    }
+    pedidoCab.importe_total = impTotal        
+    if(faltaProducto == 1){        
+        listaProductos = []
+    }
     return listaProductos
-
 }
 
 function obtenerFecha(){
@@ -192,7 +263,9 @@ export default{
     obtenerDetalles,
     obtenerPedidoPorId,
     obtenerPedidosPorUsuario,
-    agregarPedido
+    agregarPedido,
+    eliminarPedido,
+    modificarPedido
 }
 
 

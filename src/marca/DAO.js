@@ -10,11 +10,9 @@ async function obtenerTodos() {
     let lista = []
     try {
         lista = await conn.select().from(tabla)
-        conn.destroy()
     }
     catch (error) {
         console.log(error)
-        conn.destroy()
     }
     return lista
 }

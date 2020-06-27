@@ -1,6 +1,7 @@
 import dao from './DAO.js'
 import express from 'express'
 import _ from 'underscore'
+import msj from '../mensajes/mensajes.js'
 
 const router = express.Router()
 
@@ -30,10 +31,7 @@ router.get('/', (req, res) => {
         })
 
     } else{
-        resultado = {
-            "error": 400,
-            "msg": "Parámetros inválidos."
-        }
+        resultado = msj.errorParams()
         res.send(resultado)  
     }                     
 })
@@ -43,6 +41,18 @@ router.post('/', (req, res) => {
     dao.agregarPedido(req.body).then(pedido =>{
         resultado = pedido
         res.send(resultado)
+    })
+})
+
+router.put('/:id', (req, res) =>{
+    dao.modificarPedido(req.params.id, req.body).then(pedido => {
+        res.send(pedido)
+    })
+})
+
+router.delete('/:id', (req, res) => {
+    dao.eliminarPedido(req.params.id).then(pedido => {
+        res.send(pedido)
     })
 })
 
