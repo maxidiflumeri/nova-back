@@ -1,6 +1,7 @@
 import dao from './DAO.js'
 import express from 'express'
 import _ from 'underscore'
+import msj from '../mensajes/mensajes.js'
 
 const router = express.Router()
 
@@ -30,10 +31,7 @@ router.get('/', (req, res) => {
         })
 
     } else{
-        resultado = {
-            "error": 400,
-            "msg": "Parámetros inválidos."
-        }
+        resultado = msj.errorParams()
         res.send(resultado)  
     }                     
 })

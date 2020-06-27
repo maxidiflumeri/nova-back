@@ -1,5 +1,8 @@
 import getConexion from '../../db/conexionDB.js'
 import Joi from '@hapi/joi'
+import msj from '../mensajes/mensajes.js'
+import prod from '../producto/dao.js'
+
 
 const tablaCab = 'PEDIDOS_CAB'
 const tablaDet = 'PEDIDOS_DET'
@@ -70,17 +73,15 @@ async function agregarPedido(pedidoCompleto){
             for (let i = 0; i < listaProductos.length; i++) {                
                 listaProductos[i]["id_pedido"] = idPedido;                
                 await conn.insert(listaProductos[i]).into(tablaDet)                                                
-            }                      
+            }  
+            resultado = msj.mensajePost()                    
         }
         catch(error){
             console.log(error)
-        }
-        console.log(resultado)
+            resultado = error.estado
+        }         
     }else{
-        resultado = {            
-            "error": 400,
-            "msg": "Body Incorrecto."            
-        }
+        resultado = msj.errorBody()
     }
 
     return resultado
@@ -154,7 +155,7 @@ function separarListaProductos(pedidoCompleto, pedidoCab){
             "importe_unitario": prod.importe_unitario
         } 
         impParcial = pedidoDet.cantidad * pedidoDet.importe_unitario
-        impTotal = impTotal + impParcial
+        impTotal = impTotal + impParcial        
         listaProductos.push(pedidoDet)         
     }  
 
