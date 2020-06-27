@@ -60,6 +60,28 @@ async function eliminar(id) {
     return resultado
 }
 
+async function modificar(id, objeto) {
+    const conn = getConexion()
+    let resultado = null
+    let existe
+    if (validar(objeto)) {
+        try {
+            existe = await conn.update(objeto).where('ID_TIPO', '=', id).from(tabla)
+            if (existe == 1) {
+                resultado = msj.mensajePut()
+            }
+            else {
+                resultado = msj.errorNoEncontrado()
+            }
+        } catch (error) {
+            console.log(error)
+        }
+    } else {
+        resultado = msj.errorBody()
+    }
+    return resultado
+}
+
 
 function validar(objeto) {
     const objetoSchema = {
@@ -99,5 +121,6 @@ async function esDuplicado(objeto) {
 export default {
     obtenerTodos,
     agregar,
-    eliminar
+    eliminar,
+    modificar
 }

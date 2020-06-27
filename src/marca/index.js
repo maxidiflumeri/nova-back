@@ -22,4 +22,10 @@ router.delete('/:id', (req, res) => {
     })
 })
 
+router.put('/:id', (req, res) => {
+    dao.modificar(req.params.id, req.body).then(marca => {
+        res.send(marca)
+    })
+})
+
 export default router
