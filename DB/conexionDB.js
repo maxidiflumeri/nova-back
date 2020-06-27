@@ -1,4 +1,3 @@
-import sql from "mssql";
 import knexLib from 'knex'
 
 let conexionDb = null
@@ -22,8 +21,8 @@ function crearConexion(){
         }, 
         options: {
             port: 1433,
-            encrypt: true,
-            enableArithAbort: true
+            enableArithAbort: true,
+            encrypt: true
         }
     })
     return knex
