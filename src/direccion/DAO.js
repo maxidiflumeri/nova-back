@@ -1,5 +1,6 @@
-import crearConexion from '../../db/conexionDB.js'
+import getConexion from '../../db/conexionDB.js'
 import Joi from '@hapi/joi'
+import msj from '../mensajes/mensajes.js'
 
 const tabla= 'DIRECCIONES'
 
@@ -8,93 +9,99 @@ const tabla= 'DIRECCIONES'
 ------------------------------- */
 
 async function obtenerTodos() {  
-    const conn = crearConexion()
+    const conn = getConexion()
     let lista = []
     try{        
         lista = await conn.select().from(tabla)
-        conn.destroy()
     }
     catch(error){
         console.log(error)
-        conn.destroy()
     }
     return lista  
 }
 
-/* async function obtenerDireccionPorId(id) {  
-    const conn = crearConexion()
+async function obtenerDireccionesPorUsuario(idUsuario) {  
+    const conn = getConexion()
     let lista = []
     try{         
-        lista =  await conn.select().from(tabla).where('id_usuario','=',id)
-        conn.destroy()
+        lista =  await conn.select().from(tabla).where('id_usuario','=',idUsuario)
     }
     catch(error){
         console.log(error)
-        conn.destroy()
     }
     return lista    
-} 
+}
 
-async function agregarTelefono(telefono){
-    const conn = crearConexion()
+async function agregarDireccion(idUsuario, direccion) {
+    const conn = getConexion()
     let resultado = null
-    const usuarioFin = separarUsuario(usuario)
-    const telefonos = separarTelefonos(usuario)
-    const direccion = separarDireccion(usuario)
-    if(validarUsuario(usuarioFin) && validarTelefonos(telefonos) && validarDireccion(direccion)){
-        
+    if(validarDireccion(direccion)){
+        direccion["id_usuario"] = idUsuario
+        if(!await esDuplicado(direccion)){
+            try {
+                resultado = await conn.insert(direccion).into(tabla)
+            }
+            catch(error){
+                console.log(error)
+            }
+        }
+        else{
+            console.log("Estado: " + msj.errorDuplicados().estado)
+            console.log("Mesaje: " + msj.errorDuplicados().mensaje)
+        }
     }
-
+    else{
+        resultado = msj.errorBody()
+    }
     return resultado
-}*/
+}
 
+async function eliminarDireccion(idUsuario, idDireccion){
+    const conn = getConexion()
+    let resultado = null
+    let direccionEliminada
+    try{
+        direccionEliminada = await conn.del().where("id_usuario", "=", idUsuario)
+        .andWhere("id_direccion", "=", idDireccion).from(tabla)
+        if(direccionEliminada < 1){
+            resultado = msj.mensajeCustom(400, "Error al borrar direccion")
+        }
+        else{
+            resultado = msj.mensajeDelete()
+        }
+    }
+    catch(error){
+        console.log(error)
+    }
+    return resultado
+}
+
+async function modificarDireccion(idUsuario, idDireccion, direccion){
+    const conn = getConexion()
+    let resultado = null
+    let existe
+    try{
+        existe = await conn.update(direccion).where('id_usuario', '=', idUsuario)
+        .andWhere("id_direccion", "=", idDireccion).from(tabla)
+        if (existe == 1) {
+            resultado = msj.mensajeCustom(200, "Modificado con exito")
+        }
+        else {
+            resultado = msj.mensajeCustom(404, "direccion no encontrada")
+        }
+    }catch(error){
+        console.log(error)
+    }
+    return resultado
+}
 
 /* ----------------------------
------------VALIDADORES---------
-------------------------------- 
+----------VALIDACIONES---------
+------------------------------- */
 
-function validarDireccion(usuario) {
-    const usuarioSchema = {
-        id_usuario: Joi.number().required(),
-        nombre: Joi.string().required(),         
-        apellido: Joi.string().required(),
-        correo: Joi.string().email().required(),
-        clave: Joi.string().required(),
-        administrador: Joi.string().required(),
-        fecha_nacimiento: Joi.string(),
-        sexo: Joi.string()
-    }
-
-    const { error } = Joi.validate(usuario, usuarioSchema)
-    if (error) {
-        console.log('error validate')
-        return false        
-    }
-    console.log('Usuario Valido')
-    return true
-}
-
-function validarTelefonos(telefonos){
-    const telefonoSchema = {
-        telefono: Joi.number().required(),
-        descripcion: Joi.string(),
-    }
-    for (let i = 0; i < telefonos.length; i++) {
-        const tel = telefonos[i];
-        const { error } = Joi.validate(tel, telefonoSchema)
-        if (error) {
-            console.log('error al validar telefono')
-            return false        
-        } 
-    }
-    console.log('Correcto validar telefonos')
-    return true
-}
-
-function validarDireccion(direcciones){
+function validarDireccion(direccion){
     const direccionSchema = {
         id_direccion: Joi.number().required(),
-        id_usuario: Joi.number().required(),
         calle: Joi.string().required(),
         numero: Joi.number().required(),
         piso: Joi.number(),
@@ -104,15 +111,39 @@ function validarDireccion(direcciones){
         localidad: Joi.string().required()
     }
     
-    const { error } = Joi.validate(direcciones, direccionSchema)
+    const { error } = Joi.validate(direccion, direccionSchema)
     if (error) {
         console.log('error al validar direccion')
         return false        
     } 
     
-    console.log('Correcto validar direcciones')
+    console.log('Direccion valida')
     return true
-}*/
+}
+
+async function esDuplicado(direccion) {
+    const conn = getConexion()
+    let esDuplicado = false
+    let registro = null
+
+    try {
+        registro = await conn.select().from(tabla).where('id_usuario', '=', direccion.id_usuario)
+        .andWhere('id_direccion', '=', direccion.id_direccion)
+    }
+    catch (error) {
+        console.log(error)
+    }
+
+    if (registro.length > 0) {
+        esDuplicado = true
+    }
+    return esDuplicado
+}
+
 export default{
-    obtenerTodos
+    obtenerTodos,
+    obtenerDireccionesPorUsuario,
+    agregarDireccion,
+    eliminarDireccion, 
+    modificarDireccion
 }
