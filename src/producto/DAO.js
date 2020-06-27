@@ -10,11 +10,9 @@ async function obtenerTodos() {
     let lista = []
     try {
         lista = await conn.select().from(tabla)
-        
     }
     catch (error) {
         console.log(error)
-        
     }
     return lista
 }
@@ -37,11 +35,9 @@ async function agregarProducto(producto) {
             resultado = {
                 "msg": "Producto Agregado correctamente."
             }
-            
         }
         catch (error) {
             console.log(error)
-            
         }
         console.log(resultado)
     } else {
@@ -59,11 +55,11 @@ async function obtenerProductoPorId(id) {
     let lista = []
     try {
         lista = await conn.select().from(tabla).where('ID_PRODUCTO', '=', id)
-       
+
     }
     catch (error) {
         console.log(error)
-     
+
     }
     return lista
 }
@@ -73,11 +69,9 @@ async function obtenerProductoPorIdMarca(id) {
     let lista = []
     try {
         lista = await conn.select().from(tabla).where('ID_MARCA', '=', id)
-      
     }
     catch (error) {
         console.log(error)
-       
     }
     return lista
 }
@@ -87,11 +81,9 @@ async function obtenerProductoPorIdTipo(id) {
     let lista = []
     try {
         lista = await conn.select().from(tabla).where('ID_TIPO', '=', id)
-        
     }
     catch (error) {
         console.log(error)
-        
     }
     return lista
 }
@@ -102,12 +94,10 @@ async function obtenerProductoPorDescripcion(id) {
     let lista = []
     try {
         lista = await conn.select().from(tabla).where('DESCRIPCION', '=', id)
-        
         console.log(lista)
     }
     catch (error) {
         console.log(error)
-      
     }
     return lista
 }
