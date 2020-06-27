@@ -1,6 +1,6 @@
-import crearConexion from '../../db/conexionDB.js'
-import Joi from '@hapi/joi'
 import getConexion from '../../db/conexionDB.js'
+import Joi from '@hapi/joi'
+
 
 const tabla = 'USUARIOS'
 const tablaTel = 'TELEFONOS'
@@ -23,7 +23,7 @@ async function obtenerTodos() {
 }
 
 async function obtenerUsuarioPorId(id) {  
-    const conn = crearConexion()
+    const conn = getConexion()
     let lista = []
     try{         
         lista =  await conn.select().from(tabla).where('id_usuario','=',id)
@@ -37,7 +37,7 @@ async function obtenerUsuarioPorId(id) {
 }
 
 async function agregarUsuario(usuario){
-    const conn = crearConexion()
+    const conn = getConexion()
     let resultado = null
     const usuarioFin = separarUsuario(usuario)
     const telefonos = separarTelefonos(usuario)
