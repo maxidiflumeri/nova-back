@@ -19,4 +19,19 @@ router.post('/', (req, res) => {
         res.send(resultado)  
     })                         
 })
+
+router.delete('/:id_usuario', (req, res) => {
+    dao.eliminarUsuario(req.params.id_usuario).then(usuario => {
+        res.send(usuario)
+    })
+})
+
+router.put('/:idUsuario', (req, res) => {
+    dao.modificarUsuario(req.params.idUsuario, req.body).then(usuario => {
+        res.send(usuario)
+    })
+
+
+})
+
 export default router

@@ -64,12 +64,56 @@ async function agregarUsuario(usuario){
             console.log("Mesaje: " + msj.errorDuplicados().mensaje)
         }
     }else{
-        resultado = {            
-            "error": 400,
-            "msg": "Body Incorrecto."            
-        }
+        resultado = msj.errorBody()
     }
 
+    return resultado
+}
+
+async function eliminarUsuario(idUsuario){
+    const conn = getConexion()
+    let resultado = null
+    let uEliminado
+    let tEliminados
+    let dElimanadas
+    try{
+        tEliminados = await conn.del().where("id_usuario", "=", idUsuario).from(tablaTel)
+        dElimanadas = await conn.del().where("id_usuario", "=", idUsuario).from(tablaDir)
+        uEliminado = await conn.del().where("id_usuario", "=", idUsuario).from(tabla)
+        if(tEliminados < 1){
+            resultado = msj.mensajeCustom(400, "Error al borrar telefonos")
+        }
+        else if(dElimanadas < 1){
+            resultado = msj.mensajeCustom(400, "Error al borrar direcciones")
+        }
+        else if(uEliminado < 1){
+            resultado = msj.mensajeCustom(400, "Intenta borrar un usuario inexistente")
+        }
+        else{
+            resultado = msj.mensajeDelete()
+        }
+    }
+    catch(error){
+        console.log(error)
+    }
+    return resultado
+}
+
+async function modificarUsuario(id_usuario, usuario){
+    const conn = getConexion()
+    let resultado = null
+    let existe
+    try{
+        existe = await conn.update(usuario).where('id_usuario', '=', id_usuario).from(tabla)
+        if (existe == 1) {
+            resultado = msj.mensajePut()
+        }
+        else {
+            resultado = msj.errorNoEncontrado()
+        }
+    }catch(error){
+        console.log(error)
+    }
     return resultado
 }
 
@@ -202,5 +246,7 @@ async function esDuplicado(usuario){
 }
 export default{
     obtenerTodos,
-    agregarUsuario
+    agregarUsuario,
+    eliminarUsuario,
+    modificarUsuario
 }
