@@ -1,26 +1,23 @@
-import crearConexion from '../../db/conexionDB.js'
+import getConexion from '../../db/conexionDB.js'
 import Joi from '@hapi/joi'
-//import sql from "mssql"
 //DEV BY EZE LABORANTI
 
 const tabla = 'TIPOS_PRODUCTO'
 
 async function obtenerTodos() {
-    const conn = crearConexion()
+    const conn = getConexion()
     let lista = []
     try {
         lista = await conn.select().from(tabla)
-        conn.destroy()
     }
     catch (error) {
         console.log(error)
-        conn.destroy()
     }
     return lista
 }
 
 async function agregar(objeto) {
-    const conn = crearConexion()
+    const conn = getConexion()
     let resultado = null
     if (validar(objeto)) {
         if (!await esDuplicado(objeto)) {
@@ -29,11 +26,9 @@ async function agregar(objeto) {
                 resultado = {
                     "msg": "Objeto agregado."
                 }
-                conn.destroy()
             }
             catch (error) {
                 resultado = error;
-                conn.destroy()
             }
         }
         else {
@@ -66,17 +61,15 @@ function validar(objeto) {
 }
 
 async function esDuplicado(objeto) {
-    const conn = crearConexion()
+    const conn = getConexion()
     let esDuplicado = false
     let registro = null
 
     try {
         registro = await conn.select().from(tabla).where('descripcion', '=', objeto.descripcion)
-        conn.destroy()
     }
     catch (error) {
         console.log(error)
-        conn.destroy()
     }
 
     if (registro.length > 0) {
