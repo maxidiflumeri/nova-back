@@ -1,4 +1,4 @@
-import crearConexion from '../../db/conexionDB.js'
+import getConexion from '../../db/conexionDB.js'
 import sql from "mssql";
 
 const tabla = 'TIPOS_PRODUCTO'

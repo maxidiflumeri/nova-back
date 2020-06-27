@@ -6,10 +6,11 @@ const tablaDet = 'PEDIDOS_DET'
 
 
 async function obtenerTodos() {     
-    const conn = getConexion()
+    const conn = getConexion()    
     let lista = []
     try{ 
-        lista = await conn.select().from(tablaCab)               
+        lista = await conn.select().from(tablaCab)          
+        console.log(conn)             
     }
     catch(error){
         console.log(error)
