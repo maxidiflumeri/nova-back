@@ -1,6 +1,7 @@
 import dao from './DAO.js'
 import express from 'express'
 import _ from 'underscore'
+import mensajes from '../mensajes/mensajes.js'
 
 const router = express.Router()
 
@@ -37,6 +38,14 @@ else if(req.query.id_tipo){
 
 }
 
+else if(req.query.modelo){
+    dao.obtenerProductoPorIdModelo(req.query.modelo).then(lista => {
+        resultado = lista
+        res.send(resultado)
+    })
+
+}
+
 else if(req.query.descripcion){
     dao.obtenerProductoPorDescripcion(req.query.descripcion).then(lista => {
         resultado = lista
@@ -46,20 +55,20 @@ else if(req.query.descripcion){
 }
 
 else{
-    resultado = {
-        "error": 400,
-        "msg": "Parámetros inválidos."
-    }
+    resultado = mensajes.errorParams()
     res.send(resultado)  
 }
 })
 
 router.post('/', (req, res) => {
     let resultado = null
+  
     dao.agregarProducto(req.body).then(producto =>{
         resultado = producto
         res.send(resultado)
     })
+
+
 })
 
 router.delete('/:id', (req, res) => {

@@ -1,6 +1,7 @@
 import getConexion from '../../db/conexionDB.js'
 import sql from "mssql";
 import Joi from '@hapi/joi'
+import mensajes from '../mensajes/mensajes.js'
 
 const tabla = 'PRODUCTOS'
 
@@ -30,21 +31,22 @@ async function agregarProducto(producto) {
     const conn = getConexion()
     let resultado = null
     if (validarProducto(producto)) {
-        try {
-            await conn.insert(producto).into(tabla)
-            resultado = {
-                "msg": "Producto Agregado correctamente."
+        if ((await buscarProdExistente(producto.ID_TIPO, producto.ID_MARCA, producto.MODELO)).length==0) {
+            try {
+                await conn.insert(producto).into(tabla)
+                resultado = mensajes.mensajePost()
+            }
+            catch (error) {
+                console.log(error)
             }
         }
-        catch (error) {
-            console.log(error)
+        else {
+            resultado = mensajes.errorDuplicados()
         }
+
         console.log(resultado)
     } else {
-        resultado = {
-            "error": 400,
-            "msg": "Body Incorrecto."
-        }
+        resultado = mensajes.errorBody()
     }
 
     return resultado
@@ -55,7 +57,19 @@ async function obtenerProductoPorId(id) {
     let lista = []
     try {
         lista = await conn.select().from(tabla).where('ID_PRODUCTO', '=', id)
+    }
+    catch (error) {
+        console.log(error)
 
+    }
+    return lista
+}
+
+async function obtenerProductoPorIdModelo(id) {
+    const conn = getConexion()
+    let lista = []
+    try {
+        lista = await conn.select().from(tabla).where('MODELO', '=', id)
     }
     catch (error) {
         console.log(error)
@@ -70,6 +84,20 @@ async function obtenerProductoPorIdMarca(id) {
     try {
         lista = await conn.select().from(tabla).where('ID_MARCA', '=', id)
     }
+    catch (error) {
+        console.log(error)
+    }
+    return lista
+}
+
+async function buscarProdExistente(idTipo, idMarca, modelo) {
+    const conn = getConexion()
+    let lista = []
+    try {
+        lista = await conn.select().from(tabla).where('ID_TIPO', '=', idTipo).andWhere('ID_MARCA', '=', idMarca).andWhere('MODELO', '=', modelo)
+    console.log('HOLAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA')
+    }
+    
     catch (error) {
         console.log(error)
     }
@@ -154,5 +182,6 @@ export default {
     obtenerProductoPorIdMarca,
     obtenerProductoPorIdTipo,
     obtenerProductoPorDescripcion,
-    eliminarProductoById
+    eliminarProductoById,
+    obtenerProductoPorIdModelo
 }
