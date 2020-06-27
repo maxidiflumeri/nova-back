@@ -40,6 +40,27 @@ async function agregar(objeto) {
     return resultado
 }
 
+async function eliminar(id) {
+    const conn = getConexion()
+    let resultado = null
+    let existe
+    try {
+        existe = await conn.del().where('ID_ESTADO', '=', id).from(tabla)
+        if (existe == 1) {
+            resultado = msj.mensajeDelete()
+        }
+        else {
+            resultado = msj.errorNoEncontrado()
+        }
+    }
+    catch (error) {
+        console.log(error)
+    }
+
+    return resultado
+}
+
+
 function validar(objeto) {
     const objetoSchema = {
         id_estado: Joi.string().required().length(1),
@@ -78,5 +99,6 @@ async function esDuplicado(objeto) {
 
 export default {
     obtenerTodos,
-    agregar
+    agregar,
+    eliminar
 }
