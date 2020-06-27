@@ -1,4 +1,3 @@
-import sql from "mssql";
 import knexLib from 'knex'
 
 let conexionDb = null
