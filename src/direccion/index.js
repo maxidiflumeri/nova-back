@@ -27,7 +27,6 @@ router.put('/:idUsuario/:idDireccion', (req, res) => {
     dao.modificarDireccion(req.params.idUsuario, req.params.idDireccion, req.body).then(usuario => {
         res.send(usuario)
     })
-
-
 })
+
 export default router
