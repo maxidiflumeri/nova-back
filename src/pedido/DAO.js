@@ -12,13 +12,8 @@ async function obtenerTodos() {
     const conn = getConexion()    
     let lista = []
     try{ 
-<<<<<<< HEAD
-        lista = await conn.select().from(tablaCab)       
-        conn.destroy()
-=======
         lista = await conn.select().from(tablaCab)      
                     
->>>>>>> Maxi
     }
     catch(error){
         console.log(error)
