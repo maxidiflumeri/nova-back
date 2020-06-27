@@ -31,7 +31,7 @@ async function agregarProducto(producto) {
     const conn = getConexion()
     let resultado = null
     if (validarProducto(producto)) {
-        if ((await buscarProdExistente(producto.ID_TIPO, producto.ID_MARCA, producto.MODELO)).length==0) {
+        if ((await buscarProdExistente(producto.ID_TIPO, producto.ID_MARCA, producto.MODELO)).length == 0) {
             try {
                 await conn.insert(producto).into(tabla)
                 resultado = mensajes.mensajePost()
@@ -65,11 +65,11 @@ async function obtenerProductoPorId(id) {
     return lista
 }
 
-async function obtenerProductoPorIdModelo(id) {
+async function obtenerProductoPorModelo(modelo) {
     const conn = getConexion()
     let lista = []
     try {
-        lista = await conn.select().from(tabla).where('MODELO', '=', id)
+        lista = await conn.select().from(tabla).where('modelo', 'like', `%${modelo}%`)
     }
     catch (error) {
         console.log(error)
@@ -95,9 +95,9 @@ async function buscarProdExistente(idTipo, idMarca, modelo) {
     let lista = []
     try {
         lista = await conn.select().from(tabla).where('ID_TIPO', '=', idTipo).andWhere('ID_MARCA', '=', idMarca).andWhere('MODELO', '=', modelo)
-    console.log('HOLAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA')
+
     }
-    
+
     catch (error) {
         console.log(error)
     }
@@ -162,15 +162,23 @@ function validarProducto(producto) {
 
 async function eliminarProductoById(id) {
     const conn = getConexion()
-    let lista = []
-    lista = await conn.select().from(tabla)
-    const posBuscada = lista.findIndex(p => p.id == id)
-    if (posBuscada == -1) {
-        throw crearError(404, 'producto no encontrado con ese ID')
+    let resultado = null
+    let cond
+    try {
+        cond = await conn.del().where('ID_PRODUCTO', '=', id).from(tabla)
+        if (cond == 1) {
+            resultado = mensajes.mensajeDelete()
+        }
+        else {
+            resultado = mensajes.mensajeCustom(400, 'Error ID no encontrado')
+        }
     }
-    lista.splice(posBuscada, 1)
-    console.log(lista)
-    return lista
+
+    catch (error) {
+        console.log(error)
+    }
+
+    return resultado
 }
 
 
@@ -183,5 +191,6 @@ export default {
     obtenerProductoPorIdTipo,
     obtenerProductoPorDescripcion,
     eliminarProductoById,
-    obtenerProductoPorIdModelo
+    obtenerProductoPorModelo,
+    buscarProdExistente
 }
