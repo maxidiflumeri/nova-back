@@ -104,8 +104,7 @@ async function modificarPedido(id, pedidoCompleto){
         resultado = msj.mensajeCustom(404, "Productos inexistentes en la lista")
     }else if(validarPedidoCab(pedidoCab) && validarPedidoDet(listaProductos)){
         try{            
-            if(await eliminarDetallesPorId(id) > 0){
-                console.log("entre despues del eliminar los detalles")
+            if(await eliminarDetallesPorId(id) > 0){                
                 await conn.update(pedidoCab).where('Id_pedido','=',id).from(tablaCab)
                 
                 for (let i = 0; i < listaProductos.length; i++) {
@@ -153,10 +152,8 @@ async function eliminarPedido(id) {
 }
 
 async function eliminarDetallesPorId(id){
-    const conn = getConexion()
-    console.log("el id es: "+id)
-    let cantBorrados = await conn.del().where('ID_PEDIDO', '=', id).from(tablaDet)    
-    console.log("borrados: "+ cantBorrados)
+    const conn = getConexion()    
+    let cantBorrados = await conn.del().where('ID_PEDIDO', '=', id).from(tablaDet)        
     return cantBorrados
 }
 
@@ -171,11 +168,9 @@ function validarPedidoCab(pedido) {
     }
 
     const { error } = Joi.validate(pedido, pedidoSchema)
-    if (error) {      
-        console.log("error validate pedido cab")  
+    if (error) {          
         return false        
-    }    
-    console.log("ok validate pedido cab")
+    }      
     return true
 }
 
@@ -191,12 +186,10 @@ function validarPedidoDet(productos) {
     for (let i = 0; i < productos.length; i++) {
         const prod = productos[i];
         const { error } = Joi.validate(prod, productosSchema)
-        if (error) {   
-            console.log("error validate pedido det")           
+        if (error) {                      
             return false        
         }        
-    }    
-    console.log("ok validate pedido det")
+    }      
     return true
 }
 
