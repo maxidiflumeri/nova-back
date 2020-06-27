@@ -21,8 +21,8 @@ function crearConexion(){
         }, 
         options: {
             port: 1433,
-            enableArithAbort: true,
-            encrypt: true
+            encrypt: true,
+            enableArithAbort: true
         }
     })
     return knex
