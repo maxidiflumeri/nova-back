@@ -1,4 +1,5 @@
 import getConexion from '../../db/conexionDB.js'
+import msj from '../mensajes/mensajes.js'
 import Joi from '@hapi/joi'
 //DEV BY EZE LABORANTI
 
@@ -23,24 +24,17 @@ async function agregar(objeto) {
         if (!await esDuplicado(objeto)) {
             try {
                 await conn.insert(objeto).into(tabla)
-                resultado = {
-                    "msg": "Objeto agregado."
-                }
+                resultado = msj.mensajePost()
             }
             catch (error) {
                 resultado = error;
             }
         }
         else {
-            resultado = {
-                "msg": "Claves duplicadas"
-            }
+            resultado = msj.errorDuplicados()
         }
     } else {
-        resultado = {
-            "error": 400,
-            "msg": "Body Incorrecto."
-        }
+        resultado = msj.errorBody()
     }
 
     return resultado
