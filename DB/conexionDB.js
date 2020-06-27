@@ -5,7 +5,7 @@ let conexionDb = null
 function getConexion(){
     if(!conexionDb){
         conexionDb = crearConexion()
-        console.log("CONEXION CREADO EXITOSAMENTE")
+        console.log("CONEXION CREADA CON EXITO")
     }
     return conexionDb
 }
@@ -30,8 +30,3 @@ function crearConexion(){
 
 
 export default getConexion
-
-
-
-
-
