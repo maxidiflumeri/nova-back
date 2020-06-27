@@ -44,4 +44,16 @@ router.post('/', (req, res) => {
     })
 })
 
+router.put('/:id', (req, res) =>{
+    dao.modificarPedido(req.params.id, req.body).then(pedido => {
+        res.send(pedido)
+    })
+})
+
+router.delete('/:id', (req, res) => {
+    dao.eliminarPedido(req.params.id).then(pedido => {
+        res.send(pedido)
+    })
+})
+
 export default router
