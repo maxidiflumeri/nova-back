@@ -1,62 +1,54 @@
-import crearConexion from '../../db/conexionDB.js'
+import getConexion from '../../db/conexionDB.js'
 import Joi from '@hapi/joi'
+
 const tablaCab = 'PEDIDOS_CAB'
 const tablaDet = 'PEDIDOS_DET'
 
 
 async function obtenerTodos() {     
-    const conn = crearConexion()
+    const conn = getConexion()
     let lista = []
     try{ 
-        lista = await conn.select().from(tablaCab)
-        console.log(pedidoNew)
-        conn.destroy()
+        lista = await conn.select().from(tablaCab)               
     }
     catch(error){
         console.log(error)
-        conn.destroy()
     }
     return lista  
 }
 
 async function obtenerDetalles(id) {  
-    const conn = crearConexion()
+    const conn = getConexion()
     let lista = []  
     try {                   
         lista = await conn.select().from(tablaDet).where('id_pedido','=',id)
-        conn.destroy()
     }
     catch(error) {
         console.log(error)
-        conn.destroy()
     }
     return lista
 } 
 
 async function obtenerPedidoPorId(id) {  
-    const conn = crearConexion()
+    const conn = getConexion()
     let lista = []
     try{         
         lista =  await conn.select().from(tablaCab).where('id_pedido','=',id)
-        conn.destroy()
     }
     catch(error){
         console.log(error)
-        conn.destroy()
     }
     return lista    
 }
 
 async function obtenerPedidosPorUsuario(id) {      
-    const conn = crearConexion()
+    const conn = getConexion()
     let lista = []
     try{
         lista =  await conn.select().from(tablaCab).where('id_usuario','=',id)
-        conn.destroy()
     }
     catch(error){
         console.log(error)
-        conn.destroy()
     }
     return lista
 }
@@ -64,11 +56,9 @@ async function obtenerPedidosPorUsuario(id) {
 async function agregarPedido(pedidoCompleto){
 
     const pedidoCab = separarPedido(pedidoCompleto)
-
     const listaProductos = separarListaProductos(pedidoCompleto, pedidoCab)
-
     
-    const conn = crearConexion()
+    const conn = getConexion()
     let resultado = null
     if(validarPedidoCab(pedidoCab) && validarPedidoDet(listaProductos)){
         try{            
@@ -80,11 +70,9 @@ async function agregarPedido(pedidoCompleto){
                 listaProductos[i]["id_pedido"] = idPedido;                
                 await conn.insert(listaProductos[i]).into(tablaDet)                                                
             }                      
-            conn.destroy()
         }
         catch(error){
             console.log(error)
-            conn.destroy()
         }
         console.log(resultado)
     }else{
@@ -99,13 +87,12 @@ async function agregarPedido(pedidoCompleto){
 
 
 function validarPedidoCab(pedido) {
-
         
     const pedidoSchema = {         
         id_usuario: Joi.number().required(),
         id_direccion: Joi.number().required(),
         importe_total: Joi.number().required(),
-        id_estado: Joi.number().required(),
+        id_estado: Joi.string().required(),
         fecha: Joi.string().required()
     }
 
