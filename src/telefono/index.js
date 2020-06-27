@@ -3,12 +3,20 @@ import express from 'express'
 
 const router = express.Router()
 
-router.get('/', (req, res) => {
+router.get('/:idUsuario', (req, res) => {
     let resultado = null   
-    dao.obtenerTodos().then(lista =>{
-        resultado = lista
-        res.send(resultado)  
-    })                         
+    if(!idUsuario){
+        dao.obtenerTodos().then(lista =>{
+            resultado = lista
+            res.send(resultado)  
+        }) 
+    }
+    else{
+        dao.obtenerTodos().then(lista =>{
+            resultado = lista
+            res.send(resultado)  
+        })
+    }                       
 })
 
 router.post('/:idUsuario', (req, res) => {

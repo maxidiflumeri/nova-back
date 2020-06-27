@@ -20,6 +20,18 @@ async function obtenerTodos() {
     return lista  
 }
 
+async function obtenerDireccionesPorUsuario(idUsuario) {  
+    const conn = getConexion()
+    let lista = []
+    try{         
+        lista =  await conn.select().from(tabla).where('id_usuario','=',idUsuario)
+    }
+    catch(error){
+        console.log(error)
+    }
+    return lista    
+}
+
 async function agregarDireccion(idUsuario, direccion) {
     const conn = getConexion()
     let resultado = null
@@ -130,6 +142,7 @@ async function esDuplicado(direccion) {
 
 export default{
     obtenerTodos,
+    obtenerDireccionesPorUsuario,
     agregarDireccion,
     eliminarDireccion, 
     modificarDireccion

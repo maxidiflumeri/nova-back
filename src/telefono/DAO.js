@@ -20,6 +20,18 @@ async function obtenerTodos() {
     return lista  
 }
 
+async function obtenerTelefonosPorUsuario(idUsuario) {  
+    const conn = getConexion()
+    let lista = []
+    try{         
+        lista =  await conn.select().from(tabla).where('id_usuario','=',idUsuario)
+    }
+    catch(error){
+        console.log(error)
+    }
+    return lista    
+}
+
 async function agregarTelefono(idUsuario, telefono) {
     const conn = getConexion()
     let resultado = null
@@ -122,6 +134,7 @@ async function esDuplicado(telefono){
 
 export default{
     obtenerTodos,
+    obtenerTelefonosPorUsuario,
     agregarTelefono,
     eliminarTelefono,
     modificarTelefono

@@ -246,6 +246,7 @@ async function esDuplicado(usuario){
 }
 export default{
     obtenerTodos,
+    obtenerUsuarioPorId,
     agregarUsuario,
     eliminarUsuario,
     modificarUsuario
