@@ -1,8 +1,7 @@
+//DEV BY EZE LABORANTI
 import getConexion from '../../db/conexionDB.js'
 import msj from '../mensajes/mensajes.js'
 import Joi from '@hapi/joi'
-
-//DEV BY EZE LABORANTI
 
 const tabla = 'MARCAS'
 
