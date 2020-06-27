@@ -1,21 +1,30 @@
+//DEV BY EZE LABORANTI
 import dao from './DAO.js'
 import express from 'express'
 
 const router = express.Router()
 
 router.get('/', (req, res) => {
-    let resultado = null   
     dao.obtenerTodos().then(lista =>{
-        resultado = lista
-        res.send(resultado)  
+        res.send(lista)  
     })                         
 })
 
 router.post('/', (req, res) => {
-    let resultado = null
-    dao.agregar(req.body).then(pedido =>{
-        resultado = pedido
-        res.send(resultado)
+    dao.agregar(req.body).then(tipo =>{
+        res.send(tipo)
+    })
+})
+
+router.delete('/:id', (req, res) => {
+    dao.eliminar(req.params.id).then(tipo => {
+        res.send(tipo)
+    })
+})
+
+router.put('/:id', (req, res) => {
+    dao.modificar(req.params.id, req.body).then(tipo => {
+        res.send(tipo)
     })
 })
 

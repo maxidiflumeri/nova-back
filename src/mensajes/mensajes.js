@@ -20,6 +20,13 @@ function errorDuplicados(){
     }
 }
 
+function errorNoEncontrado(){
+    return{
+        "estado": 404,
+        "mensaje": "No se encontró el elemento"
+    }
+}
+
 function mensajePost(){
     return{
         "estado": 200,
@@ -52,6 +59,7 @@ export default {
     errorBody,
     errorParams,
     errorDuplicados,
+    errorNoEncontrado,
     mensajePost,
     mensajePut,
     mensajeDelete,

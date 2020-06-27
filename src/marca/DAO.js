@@ -1,12 +1,12 @@
-import crearConexion from '../../db/conexionDB.js'
-import Joi from '@hapi/joi'
-//import sql from "mssql"
 //DEV BY EZE LABORANTI
+import getConexion from '../../db/conexionDB.js'
+import msj from '../mensajes/mensajes.js'
+import Joi from '@hapi/joi'
 
 const tabla = 'MARCAS'
 
 async function obtenerTodos() {
-    const conn = crearConexion()
+    const conn = getConexion()
     let lista = []
     try {
         lista = await conn.select().from(tabla)
@@ -18,36 +18,70 @@ async function obtenerTodos() {
 }
 
 async function agregar(objeto) {
-    const conn = crearConexion()
+    const conn = getConexion()
     let resultado = null
     if (validar(objeto)) {
         if (!await esDuplicado(objeto)) {
             try {
                 await conn.insert(objeto).into(tabla)
-                resultado = {
-                    "msg": "Objeto agregado."
-                }
-                conn.destroy()
+                resultado = msj.mensajePost()
             }
             catch (error) {
                 resultado = error;
-                conn.destroy()
             }
         }
         else {
-            resultado = {
-                "msg": "Claves duplicadas"
-            }
+            resultado = msj.errorDuplicados()
         }
     } else {
-        resultado = {
-            "error": 400,
-            "msg": "Body Incorrecto."
-        }
+        resultado = msj.errorBody()
     }
 
     return resultado
 }
+
+async function eliminar(id) {
+    const conn = getConexion()
+    let resultado = null
+    let existe
+    try {
+        existe = await conn.del().where('ID_MARCA', '=', id).from(tabla)
+        if (existe == 1) {
+            resultado = msj.mensajeDelete()
+        }
+        else {
+            resultado = msj.errorNoEncontrado()
+        }
+    }
+    catch (error) {
+        console.log(error)
+    }
+
+    return resultado
+}
+
+async function modificar(id, objeto) {
+    const conn = getConexion()
+    let resultado = null
+    let existe
+    if (validar(objeto)) {
+        try {
+            existe = await conn.update(objeto).where('ID_MARCA', '=', id).from(tabla)
+            if (existe == 1) {
+                resultado = msj.mensajePut()
+            }
+            else {
+                resultado = msj.errorNoEncontrado()
+            }
+        } catch (error) {
+            console.log(error)
+        }
+    } else {
+        resultado = msj.errorBody()
+    }
+    return resultado
+}
+
 
 function validar(objeto) {
     const objetoSchema = {
@@ -64,17 +98,15 @@ function validar(objeto) {
 }
 
 async function esDuplicado(objeto) {
-    const conn = crearConexion()
+    const conn = getConexion()
     let esDuplicado = false
     let registro = null
 
     try {
         registro = await conn.select().from(tabla).where('descripcion', '=', objeto.descripcion)
-        conn.destroy()
     }
     catch (error) {
         console.log(error)
-        conn.destroy()
     }
 
     if (registro.length > 0) {
@@ -88,5 +120,7 @@ async function esDuplicado(objeto) {
 
 export default {
     obtenerTodos,
-    agregar
+    agregar,
+    eliminar,
+    modificar
 }
