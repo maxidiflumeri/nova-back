@@ -1,6 +1,16 @@
 //import sql from "mssql"
 import knexLib from 'knex'
 
+let conexionDb = null
+
+function getConexion(){
+    if(!conexionDb){
+        conexionDb = crearConexion()
+        console.log("CONEXION CREADA CON EXITO")
+    }
+    return conexionDb
+}
+
 function crearConexion(){
     const knex = knexLib({
         client: 'mssql',
@@ -19,4 +29,5 @@ function crearConexion(){
     return knex
 }
 
-export default crearConexion
+
+export default getConexion
