@@ -11,5 +11,12 @@ router.get('/', (req, res) => {
     })                         
 })
 
+router.post('/', (req, res) => {
+    let resultado = null
+    dao.agregar(req.body).then(pedido =>{
+        resultado = pedido
+        res.send(resultado)
+    })
+})
 
 export default router

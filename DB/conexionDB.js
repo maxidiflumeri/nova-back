@@ -28,5 +28,5 @@ function crearConexion(){
     return knex
 }
 
-
 export default getConexion
+
