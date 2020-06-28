@@ -12,10 +12,10 @@ const tabla = 'PRODUCTOS'
 // Funcion que trae todos los Productos
 async function obtenerTodos() {
     const conn = getConexion()
-let lista = []
+    let lista = []
     try {
         lista = await conn.select().from(tabla)
-}
+    }
     catch (error) {
         console.log(error)
     }
@@ -62,10 +62,8 @@ async function modificarProducto(id, producto) {
     const conn = getConexion()
     let resultado = null
     if (validarProducto(producto)) {
-        console.log('antes del buscarProd')
         if (obtenerProductoPorId(id) && obtenerProductoPorIdMarca(producto.ID_MARCA) && obtenerProductoPorIdTipo(producto.ID_TIPO)) {
             try {
-                console.log('entro al try')
                 await conn.update(producto).where('ID_PRODUCTO', '=', id).from(tabla)
                 resultado = mensajes.mensajePut() // informa que el producto se actualizo correctamente
             }
@@ -172,7 +170,7 @@ function validarProducto(producto) {
 
     console.log(producto)
     const productoSchema = {
-        /* ID_PRODUCTO: Joi.number().required(), */
+
         ID_TIPO: Joi.number().required(),
         ID_MARCA: Joi.number().required(),
         MODELO: Joi.string().required(),
@@ -184,7 +182,6 @@ function validarProducto(producto) {
         FOTO1: Joi.string(),
         FOTO2: Joi.string(),
         FOTO3: Joi.string()
-        /*       ID_PRODUCTO: Joi.number() */
     }
 
     const { error } = Joi.validate(producto, productoSchema)
