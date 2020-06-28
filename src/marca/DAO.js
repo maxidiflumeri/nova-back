@@ -17,6 +17,30 @@ async function obtenerTodos() {
     return lista
 }
 
+async function obtenerPorId(id) {  
+    const conn = getConexion()
+    let lista = []  
+    try {                   
+        lista = await conn.select().from(tabla).where('id_marca','=',id)
+    }
+    catch(error) {
+        console.log(error)
+    }
+    return lista
+} 
+
+async function obtenerPorDescripcion(desc) {  
+    const conn = getConexion()
+    let lista = []
+    try{         
+        lista =  await conn.select().from(tabla).where('descripcion','like', `%${desc}%`)
+    }
+    catch(error){
+        console.log(error)
+    }
+    return lista    
+}
+
 async function agregar(objeto) {
     const conn = getConexion()
     let resultado = null
@@ -90,10 +114,8 @@ function validar(objeto) {
 
     const { error } = Joi.validate(objeto, objetoSchema)
     if (error) {
-        console.log('Error validate')
         return false
     }
-    console.log('Correcto validate')
     return true
 }
 
@@ -113,13 +135,13 @@ async function esDuplicado(objeto) {
         esDuplicado = true
     }
 
-    console.log(registro)
-    console.log('Claves duplicadas: ' + esDuplicado)
     return esDuplicado
 }
 
 export default {
     obtenerTodos,
+    obtenerPorId,
+    obtenerPorDescripcion,
     agregar,
     eliminar,
     modificar
