@@ -21,7 +21,14 @@ router.get('/', (req, res) => {
     else if (req.query.id_producto) {
         dao.obtenerProductoPorId(req.query.id_producto).then(lista => {
             resultado = lista
-            res.send(resultado)
+            if(resultado.length>0)
+            { 
+                res.send(resultado)
+            }
+            else{
+                res.send(mensajes.mensajeSinResultados())
+            }
+           
         })
 
     }
@@ -29,7 +36,13 @@ router.get('/', (req, res) => {
     else if (req.query.id_marca) {
         dao.obtenerProductoPorIdMarca(req.query.id_marca).then(lista => {
             resultado = lista
-            res.send(resultado)
+            if(resultado.length>0)
+            { 
+                res.send(resultado)
+            }
+            else{
+                res.send(mensajes.mensajeSinResultados())
+            }
         })
 
     }
@@ -37,7 +50,13 @@ router.get('/', (req, res) => {
     else if (req.query.id_tipo) {
         dao.obtenerProductoPorIdTipo(req.query.id_tipo).then(lista => {
             resultado = lista
-            res.send(resultado)
+            if(resultado.length>0)
+            { 
+                res.send(resultado)
+            }
+            else{
+                res.send(mensajes.mensajeSinResultados())
+            }
         })
 
     }
@@ -45,7 +64,13 @@ router.get('/', (req, res) => {
     else if (req.query.modelo) {
         dao.obtenerProductoPorModelo(req.query.modelo).then(lista => {
             resultado = lista
-            res.send(resultado)
+            if(resultado.length>0)
+            { 
+                res.send(resultado)
+            }
+            else{
+                res.send(mensajes.mensajeSinResultados())
+            }
         })
 
     }
@@ -53,7 +78,13 @@ router.get('/', (req, res) => {
     else if (req.query.descripcion) {
         dao.obtenerProductoPorDescripcion(req.query.descripcion).then(lista => {
             resultado = lista
-            res.send(resultado)
+            if(resultado.length>0)
+            { 
+                res.send(resultado)
+            }
+            else{
+                res.send(mensajes.mensajeSinResultados())
+            }
         })
 
     }
