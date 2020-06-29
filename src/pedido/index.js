@@ -1,3 +1,5 @@
+// DEV BY MAXIMILIANO ARIEL DI FLUMERI
+
 import dao from './DAO.js'
 import express from 'express'
 import _ from 'underscore'
@@ -15,19 +17,32 @@ router.get('/', (req, res) => {
     } else if(req.query.idDetalle){
         dao.obtenerDetalles(req.query.idDetalle).then(lista => {
             resultado = lista
-            res.send(resultado)
+            if(resultado.length > 0){
+                res.send(resultado)
+            }else{
+                res.send(msj.mensajeSinResultados())
+            }
+            
         })
 
     } else if(req.query.idPedido){
         dao.obtenerPedidoPorId(req.query.idPedido).then(lista => {
             resultado = lista
-            res.send(resultado)
+            if(resultado.length > 0)
+                res.send(resultado)
+            else{
+                res.send(msj.mensajeSinResultados())
+            }
         })
 
     } else if(req.query.idUsuario){
         dao.obtenerPedidosPorUsuario(req.query.idUsuario).then(lista => {
             resultado = lista
-            res.send(resultado)
+            if(resultado.length > 0){
+                res.send(resultado)
+            }else{
+                res.send(msj.mensajeSinResultados())
+            }           
         })
 
     } else{

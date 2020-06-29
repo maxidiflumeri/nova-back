@@ -61,6 +61,14 @@ function mensajeCustom(estado, mensaje){
     }
 }
 
+function mensajeSinResultados(){
+    return{
+        "estado": 200,
+        "mensaje": "No se encontraron resultados"
+    }
+
+}
+
 export default {    
     errorBody,
     errorParams,
@@ -70,5 +78,5 @@ export default {
     mensajePut,
     mensajeDelete,
     mensajeSinResultados,
-    mensajeCustom    
+    mensajeCustom
 }

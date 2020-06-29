@@ -1,13 +1,11 @@
-// DEV BY MAXIMILIANO ARIEL DI FLUMERI
-
 import request from 'request-promise-native'
 
-function crearCliente(path, port){
+function crearCliente(path, port) {
     const serverPath = path + ':' + port
 
-    const apiPath = '/api/pedidos'
+    const apiPath = '/api/productos'
 
-    async function obtenerTodos(){
+    async function obtenerTodos() {
 
         const options = {
             method: 'get',
@@ -18,82 +16,80 @@ function crearCliente(path, port){
         return await request(options)
     }
 
-    
-    async function obtenerPorIdUsuario(id){
+    async function obtenerProductoPorId(id) {
 
         const options = {
             method: 'get',
             uri: serverPath + apiPath,
             json: true,
-            qs: {idUsuario: id }
+            qs: { id_producto: id }
         }
 
         return await request(options)
     }
 
-        
-    async function obtenerDetallesPorIdPedido(id){
+
+    async function obtenerProductoPorModelo(model) {
 
         const options = {
             method: 'get',
             uri: serverPath + apiPath,
             json: true,
-            qs: {idDetalle: id }
+            qs: { modelo: model }
         }
 
         return await request(options)
     }
 
-    async function obtenerPedidoPorId(id){
+    async function obtenerProductoPorIdTipo(id) {
 
         const options = {
             method: 'get',
             uri: serverPath + apiPath,
             json: true,
-            qs: {idPedido: id }
+            qs: { id_tipo: id }
         }
 
         return await request(options)
     }
 
-    
-    async function obtenerPedidoPorIdError(id){
+    async function obtenerProductoPorIdMarca(id) {
 
         const options = {
             method: 'get',
             uri: serverPath + apiPath,
             json: true,
-            qs: {id_Pedido: id }
+            qs: { id_marca: id }
         }
 
         return await request(options)
     }
 
-    async function agregarPedido(pedido){
+    async function agregarProducto(producto) {
 
         const options = {
             method: 'post',
             uri: serverPath + apiPath,
-            body: pedido,
+            body: producto,
             json: true
         }
 
         return await request(options)
     }
 
-    async function modificarPedido(pedido,id){
+    async function modificarProducto(id, producto) {
 
         const options = {
             method: 'put',
             uri: serverPath + apiPath + '/' + id,
-            body: pedido,
+            body: producto,
             json: true
         }
 
         return await request(options)
     }
 
-    async function eliminarPedido(id){
+    async function eliminarProducto(id) {
 
         const options = {
             method: 'delete',
@@ -104,17 +100,15 @@ function crearCliente(path, port){
         return await request(options)
     }
 
-
-
     return {
         obtenerTodos,
-        obtenerPorIdUsuario,
-        obtenerDetallesPorIdPedido,
-        obtenerPedidoPorId,
-        agregarPedido,
-        modificarPedido,
-        eliminarPedido,
-        obtenerPedidoPorIdError
+        obtenerProductoPorId,
+        obtenerProductoPorModelo,
+        obtenerProductoPorIdTipo,
+        obtenerProductoPorIdMarca,
+        agregarProducto,
+        modificarProducto,
+        eliminarProducto
     }
 
 }
