@@ -20,6 +20,13 @@ function errorDuplicados(){
     }
 }
 
+function errorNoEncontrado(){
+    return{
+        "estado": 404,
+        "mensaje": "No se encontró el elemento"
+    }
+}
+
 function mensajePost(){
     return{
         "estado": 200,
@@ -41,6 +48,14 @@ function mensajeDelete(){
     }
 }
 
+function mensajeSinResultados(){
+    return{
+        "estado": 200,
+        "mensaje": "No se encontraron resultados"
+    }
+
+}
+
 function mensajeCustom(estado, mensaje){
     return{
         "estado": estado,
@@ -48,12 +63,22 @@ function mensajeCustom(estado, mensaje){
     }
 }
 
+function mensajeSinResultados(){
+    return{
+        "estado": 200,
+        "mensaje": "No se encontraron resultados"
+    }
+
+}
+
 export default {    
     errorBody,
     errorParams,
     errorDuplicados,
+    errorNoEncontrado,
     mensajePost,
     mensajePut,
     mensajeDelete,
-    mensajeCustom    
+    mensajeSinResultados,
+    mensajeCustom
 }

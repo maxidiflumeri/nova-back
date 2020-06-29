@@ -4,6 +4,8 @@ import pedido from '../pedido/index.js'
 import producto from '../producto/index.js'
 import tipoProducto from '../tipo-producto/index.js'
 import usuario from '../usuario/index.js'
+import direccion from '../direccion/index.js'
+import telefono from '../telefono/index.js'
 
 export default{
     estado,
@@ -11,5 +13,7 @@ export default{
     pedido,
     producto,
     tipoProducto,
-    usuario
+    usuario,
+    direccion,
+    telefono
 }

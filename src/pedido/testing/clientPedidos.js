@@ -1,3 +1,5 @@
+// DEV BY MAXIMILIANO ARIEL DI FLUMERI
+
 import request from 'request-promise-native'
 
 function crearCliente(path, port){
@@ -54,6 +56,19 @@ function crearCliente(path, port){
         return await request(options)
     }
 
+    
+    async function obtenerPedidoPorIdError(id){
+
+        const options = {
+            method: 'get',
+            uri: serverPath + apiPath,
+            json: true,
+            qs: {id_Pedido: id }
+        }
+
+        return await request(options)
+    }
+
     async function agregarPedido(pedido){
 
         const options = {
@@ -98,7 +113,8 @@ function crearCliente(path, port){
         obtenerPedidoPorId,
         agregarPedido,
         modificarPedido,
-        eliminarPedido
+        eliminarPedido,
+        obtenerPedidoPorIdError
     }
 
 }
