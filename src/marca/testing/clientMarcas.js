@@ -1,122 +1,99 @@
-// DEV BY MAXIMILIANO ARIEL DI FLUMERI
-
+//DEV BY EZE LABORANTI
 import request from 'request-promise-native'
 
-function crearCliente(path, port){
+function crearCliente(path, port) {
     const serverPath = path + ':' + port
 
-    const apiPath = '/api/pedidos'
+    const apiPath = '/api/marcas'
 
-    async function obtenerTodos(){
-
+    async function obtenerTodos() {
         const options = {
             method: 'get',
             uri: serverPath + apiPath,
             json: true
         }
-
         return await request(options)
     }
 
-    
-    async function obtenerPorIdUsuario(id){
-
+    async function obtenerPorId(id) {
         const options = {
             method: 'get',
             uri: serverPath + apiPath,
             json: true,
-            qs: {idUsuario: id }
+            qs: { id: id }
         }
-
         return await request(options)
     }
 
-        
-    async function obtenerDetallesPorIdPedido(id){
-
+    async function obtenerPorIdFallido(id) {
         const options = {
             method: 'get',
             uri: serverPath + apiPath,
             json: true,
-            qs: {idDetalle: id }
+            qs: { id_ : id }
         }
-
         return await request(options)
     }
 
-    async function obtenerPedidoPorId(id){
-
+    async function obtenerPorDescripcion(desc) {
         const options = {
             method: 'get',
             uri: serverPath + apiPath,
             json: true,
-            qs: {idPedido: id }
+            qs: { descripcion : desc }
         }
-
         return await request(options)
     }
 
-    
-    async function obtenerPedidoPorIdError(id){
-
+    async function obtenerPorDescripcionFallido(desc) {
         const options = {
             method: 'get',
             uri: serverPath + apiPath,
             json: true,
-            qs: {id_Pedido: id }
+            qs: { descripcion_ : desc }
         }
-
         return await request(options)
     }
 
-    async function agregarPedido(pedido){
-
+    async function agregar(objeto) {
         const options = {
             method: 'post',
             uri: serverPath + apiPath,
-            body: pedido,
+            body: objeto,
             json: true
         }
-
         return await request(options)
     }
 
-    async function modificarPedido(pedido,id){
-
+    async function modificar(id, objeto) {
         const options = {
             method: 'put',
             uri: serverPath + apiPath + '/' + id,
-            body: pedido,
+            body: objeto,
             json: true
         }
-
         return await request(options)
     }
 
-    async function eliminarPedido(id){
-
+    async function eliminar(id) {
         const options = {
             method: 'delete',
             uri: serverPath + apiPath + '/' + id,
             json: true
         }
-
         return await request(options)
     }
 
-
-
     return {
         obtenerTodos,
-        obtenerPorIdUsuario,
-        obtenerDetallesPorIdPedido,
-        obtenerPedidoPorId,
-        agregarPedido,
-        modificarPedido,
-        eliminarPedido,
-        obtenerPedidoPorIdError
+        obtenerPorId,
+        obtenerPorIdFallido,
+        obtenerPorDescripcion,
+        obtenerPorDescripcionFallido,
+        agregar,
+        eliminar,
+        modificar
     }
-
 }
 
 export default crearCliente

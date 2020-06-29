@@ -1,7 +1,11 @@
+// DEV BY MAXIMILIANO ARIEL DI FLUMERI
+
 import getConexion from '../../db/conexionDB.js'
 import Joi from '@hapi/joi'
 import msj from '../mensajes/mensajes.js'
 import prod from '../producto/dao.js'
+import usu from '../usuario/dao.js'
+
 
 
 const tablaCab = 'PEDIDOS_CAB'
@@ -66,6 +70,8 @@ async function agregarPedido(pedidoCompleto){
     let resultado = null    
     if(listaProductos.length == 0){        
         resultado = msj.mensajeCustom(404, "Productos inexistentes en la lista")
+    }else if((await usu.obtenerUsuarioPorId(pedidoCab.id_usuario)).length == 0){
+        resultado = msj.mensajeCustom(404, "Usuario inexistente.")    
     }else if(validarPedidoCab(pedidoCab) && validarPedidoDet(listaProductos)){
             try{            
                 resultado = await conn.insert(pedidoCab).into(tablaCab)
@@ -83,14 +89,12 @@ async function agregarPedido(pedidoCompleto){
             }         
     }else{
         resultado = msj.errorBody()
-    }
-    
+    }    
 
     return resultado
 }
 
 async function modificarPedido(id, pedidoCompleto){
-
     const pedidoCab = separarPedido(pedidoCompleto)
     const listaProductos = await separarListaProductos(pedidoCompleto, pedidoCab)
     const conn = getConexion()
@@ -99,8 +103,7 @@ async function modificarPedido(id, pedidoCompleto){
         resultado = msj.mensajeCustom(404, "Productos inexistentes en la lista")
     }else if(validarPedidoCab(pedidoCab) && validarPedidoDet(listaProductos)){
         try{            
-            if(await eliminarDetallesPorId(id) > 0){
-                console.log("entre despues del eliminar los detalles")
+            if(await eliminarDetallesPorId(id) > 0){                
                 await conn.update(pedidoCab).where('Id_pedido','=',id).from(tablaCab)
                 
                 for (let i = 0; i < listaProductos.length; i++) {
@@ -108,14 +111,16 @@ async function modificarPedido(id, pedidoCompleto){
                     const prodDetalle = listaProductos[i];
                     await conn.insert(prodDetalle).into(tablaDet)                    
                 } 
-                resultado = msj.mensajeCustom(200, "Pedido modificado Exitosamente")    
+                resultado = msj.mensajePut()    
             }else{
-                resultado = msj.mensajeCustom(400, "Producto no encontrado en el pedido")
+                resultado = msj.errorNoEncontrado()
             }
         }
         catch(error){
             console.log(error)
         }
+    }else{
+        resultado = msj.errorBody()
     }
 
     return resultado
@@ -141,17 +146,15 @@ async function eliminarPedido(id) {
             console.log(error)
         }
     }else{
-        resultado = msj.mensajeCustom(404, "Pedido o detalle del pedido no encontrado.")
+        resultado = msj.errorNoEncontrado()
     }    
 
     return resultado
 }
 
 async function eliminarDetallesPorId(id){
-    const conn = getConexion()
-    console.log("el id es: "+id)
-    let cantBorrados = await conn.del().where('ID_PEDIDO', '=', id).from(tablaDet)    
-    console.log("borrados: "+ cantBorrados)
+    const conn = getConexion()    
+    let cantBorrados = await conn.del().where('ID_PEDIDO', '=', id).from(tablaDet)        
     return cantBorrados
 }
 
@@ -166,11 +169,9 @@ function validarPedidoCab(pedido) {
     }
 
     const { error } = Joi.validate(pedido, pedidoSchema)
-    if (error) {      
-        console.log("error validate pedido cab")  
+    if (error) {          
         return false        
-    }    
-    console.log("ok validate pedido cab")
+    }      
     return true
 }
 
@@ -186,12 +187,10 @@ function validarPedidoDet(productos) {
     for (let i = 0; i < productos.length; i++) {
         const prod = productos[i];
         const { error } = Joi.validate(prod, productosSchema)
-        if (error) {   
-            console.log("error validate pedido det")           
+        if (error) {                      
             return false        
         }        
-    }    
-    console.log("ok validate pedido det")
+    }      
     return true
 }
 

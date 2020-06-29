@@ -14,10 +14,10 @@ const tabla = 'PRODUCTOS'
 // Funcion que trae todos los Productos
 async function obtenerTodos() {
     const conn = getConexion()
-    let lista = []
+let lista = []
     try {
         lista = await conn.select().from(tabla)
-    }
+}
     catch (error) {
         console.log(error)
     }
@@ -91,7 +91,6 @@ async function modificarProducto(id, producto) {
             resultado = mensajes.errorNoEncontrado()  // informa que el producto posee errores en el body
         }
         console.log(resultado)
-
     }
     else {
         resultado = mensajes.errorBody()  // informa que el producto posee errores en el body

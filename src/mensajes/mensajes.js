@@ -1,4 +1,3 @@
-
 function errorBody(){
     return {
         "estado": 400,
@@ -17,6 +16,13 @@ function errorDuplicados(){
     return{
         "estado": 400,
         "mensaje": "Claves duplicadas"
+    }
+}
+
+function errorNoEncontrado(){
+    return{
+        "estado": 404,
+        "mensaje": "No se encontró el elemento"
     }
 }
 
@@ -41,6 +47,13 @@ function mensajeDelete(){
     }
 }
 
+function mensajeSinResultados(){
+    return{
+        "estado": 200,
+        "mensaje": "No se encontraron resultados"
+    }
+}
+
 function mensajeCustom(estado, mensaje){
     return{
         "estado": estado,
@@ -52,8 +65,10 @@ export default {
     errorBody,
     errorParams,
     errorDuplicados,
+    errorNoEncontrado,
     mensajePost,
     mensajePut,
     mensajeDelete,
-    mensajeCustom    
+    mensajeSinResultados,
+    mensajeCustom
 }
