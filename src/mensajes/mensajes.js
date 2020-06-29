@@ -1,4 +1,3 @@
-
 function errorBody(){
     return {
         "estado": 400,
@@ -53,7 +52,6 @@ function mensajeSinResultados(){
         "estado": 200,
         "mensaje": "No se encontraron resultados"
     }
-
 }
 
 function mensajeCustom(estado, mensaje){
