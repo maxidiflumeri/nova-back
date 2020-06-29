@@ -9,15 +9,24 @@ const router = express.Router()
 router.get('/', (req, res) => {
     if (_.isEmpty(req.query)) {
         dao.obtenerTodos().then(lista => {
-            res.send(lista)
+            if (lista.length > 0)
+                res.send(lista)
+            else
+                res.send(msj.mensajeSinResultados())
         })
     } else if (req.query.id) {
         dao.obtenerPorId(req.query.id).then(estado => {
-            res.send(estado)
+            if (estado.length > 0)
+                res.send(estado)
+            else
+                res.send(msj.mensajeSinResultados())
         })
     } else if (req.query.descripcion) {
         dao.obtenerPorDescripcion(req.query.descripcion).then(estado => {
-            res.send(estado)
+            if (estado.length > 0)
+                res.send(estado)
+            else
+                res.send(msj.mensajeSinResultados())
         })
     }
     else {
