@@ -1,7 +1,11 @@
+// DEV BY MAXIMILIANO ARIEL DI FLUMERI
+
 import getConexion from '../../db/conexionDB.js'
 import Joi from '@hapi/joi'
 import msj from '../mensajes/mensajes.js'
 import prod from '../producto/dao.js'
+import usu from '../usuario/dao.js'
+
 
 
 const tablaCab = 'PEDIDOS_CAB'
@@ -66,6 +70,8 @@ async function agregarPedido(pedidoCompleto){
     let resultado = null    
     if(listaProductos.length == 0){        
         resultado = msj.mensajeCustom(404, "Productos inexistentes en la lista")
+    }else if((await usu.obtenerUsuarioPorId(pedidoCab.id_usuario)).length == 0){
+        resultado = msj.mensajeCustom(404, "Usuario inexistente.")    
     }else if(validarPedidoCab(pedidoCab) && validarPedidoDet(listaProductos)){
             try{            
                 resultado = await conn.insert(pedidoCab).into(tablaCab)
@@ -83,14 +89,12 @@ async function agregarPedido(pedidoCompleto){
             }         
     }else{
         resultado = msj.errorBody()
-    }
-    
+    }    
 
     return resultado
 }
 
 async function modificarPedido(id, pedidoCompleto){
-
     const pedidoCab = separarPedido(pedidoCompleto)
     const listaProductos = await separarListaProductos(pedidoCompleto, pedidoCab)
     const conn = getConexion()
@@ -107,14 +111,16 @@ async function modificarPedido(id, pedidoCompleto){
                     const prodDetalle = listaProductos[i];
                     await conn.insert(prodDetalle).into(tablaDet)                    
                 } 
-                resultado = msj.mensajeCustom(200, "Pedido modificado Exitosamente")    
+                resultado = msj.mensajePut()    
             }else{
-                resultado = msj.mensajeCustom(400, "Producto no encontrado en el pedido")
+                resultado = msj.errorNoEncontrado()
             }
         }
         catch(error){
             console.log(error)
         }
+    }else{
+        resultado = msj.errorBody()
     }
 
     return resultado
@@ -140,7 +146,7 @@ async function eliminarPedido(id) {
             console.log(error)
         }
     }else{
-        resultado = msj.mensajeCustom(404, "Pedido o detalle del pedido no encontrado.")
+        resultado = msj.errorNoEncontrado()
     }    
 
     return resultado

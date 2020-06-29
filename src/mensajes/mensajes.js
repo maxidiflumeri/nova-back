@@ -48,6 +48,14 @@ function mensajeDelete(){
     }
 }
 
+function mensajeSinResultados(){
+    return{
+        "estado": 200,
+        "mensaje": "No se encontraron resultados"
+    }
+
+}
+
 function mensajeCustom(estado, mensaje){
     return{
         "estado": estado,
@@ -63,5 +71,6 @@ export default {
     mensajePost,
     mensajePut,
     mensajeDelete,
+    mensajeSinResultados,
     mensajeCustom    
 }
