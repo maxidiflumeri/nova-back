@@ -5,6 +5,8 @@ import getConexion from '../../db/conexionDB.js'
 import sql from "mssql";
 import Joi from '@hapi/joi'
 import mensajes from '../mensajes/mensajes.js'
+import daoMarca from '../marca/DAO.js'
+import daoTipo from '../tipo-producto/DAO.js'
 
 // Nombre de Tabla de Productos en SQL
 const tabla = 'PRODUCTOS'
@@ -62,23 +64,38 @@ async function modificarProducto(id, producto) {
     const conn = getConexion()
     let resultado = null
     if (validarProducto(producto)) {
-        if (obtenerProductoPorId(id) && obtenerProductoPorIdMarca(producto.ID_MARCA) && obtenerProductoPorIdTipo(producto.ID_TIPO)) {
-            try {
-                await conn.update(producto).where('ID_PRODUCTO', '=', id).from(tabla)
-                resultado = mensajes.mensajePut() // informa que el producto se actualizo correctamente
+        const prod = await obtenerProductoPorId(id)
+        if (prod.length > 0) {
+            const marca = await daoMarca.obtenerPorId(producto.ID_MARCA)
+            if (marca.length > 0) {
+                const tipo = await daoTipo.obtenerPorId(producto.ID_TIPO)
+                if (tipo.length > 0) {
+                    try {
+                        await conn.update(producto).where('ID_PRODUCTO', '=', id).from(tabla)
+                        resultado = mensajes.mensajePut() // informa que el producto se actualizo correctamente
+                    }
+                    catch (error) {
+                        console.log(error)
+                    }
+                }
+                else {
+                    resultado = mensajes.mensajeCustom(400, 'El tipo no existe')
+                }
             }
-            catch (error) {
-                console.log(error)
+            else {
+                resultado = mensajes.mensajeCustom(400, 'La marca no existe')
             }
+
         }
         else {
-            resultado = mensajes.mensajeCustom(404, 'error, elemento no encontrado')  // informa que el producto posee errores en el body
+            resultado = mensajes.errorNoEncontrado()  // informa que el producto posee errores en el body
         }
+        console.log(resultado)
+
     }
     else {
         resultado = mensajes.errorBody()  // informa que el producto posee errores en el body
     }
-    console.log(resultado)
     return resultado
 }
 
@@ -88,11 +105,13 @@ async function obtenerProductoPorId(id) {
     let lista = []
     try {
         lista = await conn.select().from(tabla).where('ID_PRODUCTO', '=', id)
+
     }
     catch (error) {
         console.log(error)
 
     }
+
     return lista
 }
 
@@ -156,7 +175,7 @@ async function obtenerProductoPorDescripcion(id) {
     const conn = getConexion()
     let lista = []
     try {
-        lista = await conn.select().from(tabla).where('DESCRIPCION', '=', id)
+        lista = await conn.select().from(tabla).where('descripcion', 'like', `%${id}%`)
         console.log(lista)
     }
     catch (error) {
@@ -168,7 +187,7 @@ async function obtenerProductoPorDescripcion(id) {
 // Funcion que Valida Producto para agregarlo
 function validarProducto(producto) {
 
-    console.log(producto)
+    /* console.log(producto) */
     const productoSchema = {
 
         ID_TIPO: Joi.number().required(),
@@ -206,7 +225,7 @@ async function eliminarProductoById(id) {
             resultado = mensajes.mensajeDelete()
         }
         else {
-            resultado = mensajes.mensajeCustom(400, 'Error ID no encontrado')
+            resultado = mensajes.errorNoEncontrado()
         }
     }
 
