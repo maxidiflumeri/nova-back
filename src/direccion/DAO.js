@@ -32,22 +32,21 @@ async function obtenerDireccionesPorUsuario(idUsuario) {
     return lista    
 }
 
-async function agregarDireccion(idUsuario, direccion) {
+async function agregarDireccion(direccion) {
     const conn = getConexion()
     let resultado = null
     if(validarDireccion(direccion)){
-        direccion["id_usuario"] = idUsuario
         if(!await esDuplicado(direccion)){
             try {
-                resultado = await conn.insert(direccion).into(tabla)
+                await conn.insert(direccion).into(tabla)
+                resultado = msj.mensajePost()
             }
             catch(error){
                 console.log(error)
             }
         }
         else{
-            console.log("Estado: " + msj.errorDuplicados().estado)
-            console.log("Mesaje: " + msj.errorDuplicados().mensaje)
+            resultado = msj.errorDuplicados()
         }
     }
     else{
@@ -80,17 +79,22 @@ async function modificarDireccion(idUsuario, idDireccion, direccion){
     const conn = getConexion()
     let resultado = null
     let existe
-    try{
-        existe = await conn.update(direccion).where('id_usuario', '=', idUsuario)
-        .andWhere("id_direccion", "=", idDireccion).from(tabla)
-        if (existe == 1) {
-            resultado = msj.mensajeCustom(200, "Modificado con exito")
+    if(validarDireccion(direccion)){
+        try{
+            existe = await conn.update(direccion).where('id_usuario', '=', idUsuario)
+            .andWhere("id_direccion", "=", idDireccion).from(tabla)
+            if (existe == 1) {
+                resultado = msj.mensajeCustom(200, "Modificado con exito")
+            }
+            else {
+                resultado = msj.mensajeCustom(404, "direccion no encontrada")
+            }
+        }catch(error){
+            console.log(error)
         }
-        else {
-            resultado = msj.mensajeCustom(404, "direccion no encontrada")
-        }
-    }catch(error){
-        console.log(error)
+    }
+    else{
+        resultado = msj.errorBody()
     }
     return resultado
 }
@@ -101,6 +105,7 @@ async function modificarDireccion(idUsuario, idDireccion, direccion){
 
 function validarDireccion(direccion){
     const direccionSchema = {
+        id_usuario: Joi.number().required(),
         id_direccion: Joi.number().required(),
         calle: Joi.string().required(),
         numero: Joi.number().required(),

@@ -32,22 +32,21 @@ async function obtenerTelefonosPorUsuario(idUsuario) {
     return lista    
 }
 
-async function agregarTelefono(idUsuario, telefono) {
+async function agregarTelefono(telefono) {
     const conn = getConexion()
     let resultado = null
     if(validarTelefono(telefono)){
-        telefono["id_usuario"] = idUsuario
         if(!await esDuplicado(telefono)){
             try {
-                resultado = await conn.insert(telefono).into(tabla)
+                await conn.insert(telefono).into(tabla)
+                resultado = msj.mensajePost()
             }
             catch(error){
                 console.log(error)
             }
         }
         else{
-            console.log("Estado: " + msj.errorDuplicados().estado)
-            console.log("Mesaje: " + msj.errorDuplicados().mensaje)
+            resultado = msj.errorDuplicados()
         }
     }
     else{
@@ -80,17 +79,22 @@ async function modificarTelefono(idUsuario, idTelefono, telefono){
     const conn = getConexion()
     let resultado = null
     let existe
-    try{
-        existe = await conn.update(telefono).where('id_usuario', '=', idUsuario)
-        .andWhere("telefono", "=", idTelefono).from(tabla)
-        if (existe == 1) {
-            resultado = msj.mensajeCustom(200, "Telefono modificado con exito")
+    if(validarTelefono(telefono)){
+        try{
+            existe = await conn.update(telefono).where('id_usuario', '=', idUsuario)
+            .andWhere("telefono", "=", idTelefono).from(tabla)
+            if (existe == 1) {
+                resultado = msj.mensajeCustom(200, "Telefono modificado con exito")
+            }
+            else {
+                resultado = msj.mensajeCustom(404, "telefono no encontrado")
+            }
+        }catch(error){
+            console.log(error)
         }
-        else {
-            resultado = msj.mensajeCustom(404, "telefono no encontrado")
-        }
-    }catch(error){
-        console.log(error)
+    }
+    else{
+        resultado = msj.errorBody()
     }
     return resultado
 }
@@ -101,6 +105,7 @@ async function modificarTelefono(idUsuario, idTelefono, telefono){
 
 function validarTelefono(telefono){
     const telefonoSchema = {
+        id_usuario: Joi.number().required(),
         telefono: Joi.number().required(),
         descripcion: Joi.string(),
     }

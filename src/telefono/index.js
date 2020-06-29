@@ -1,41 +1,44 @@
 import dao from './DAO.js'
 import express from 'express'
+import _ from 'underscore'
 
 const router = express.Router()
 
-router.get('/:idUsuario', (req, res) => {
+router.get('/', (req, res) => {
     let resultado = null   
-    if(!idUsuario){
+    if(_.isEmpty(req.query)){           
         dao.obtenerTodos().then(lista =>{
             resultado = lista
             res.send(resultado)  
         }) 
+    }    
+    else if(req.query.idUsuario){
+        dao.obtenerTelefonosPorUsuario(req.query.idUsuario).then(lista => {
+            resultado = lista
+            res.send(resultado)
+        })
     }
     else{
-        dao.obtenerTodos().then(lista =>{
-            resultado = lista
-            res.send(resultado)  
-        })
-    }                       
+        resultado = msj.errorParams()
+        res.send(resultado)  
+    }                      
 })
 
-router.post('/:idUsuario', (req, res) => {
-    dao.agregarTelefono(req.params.idUsuario, req.body).then(telefono =>{
+router.post('/', (req, res) => {
+    dao.agregarTelefono(req.body).then(telefono =>{
         res.send(telefono)  
     })                         
 })
 
 router.delete('/:idUsuario/:telefono', (req, res) => {
-    console.log(req.params.idUsuario)   
-    console.log(req.params.telefono)   
     dao.eliminarTelefono(req.params.idUsuario, req.params.telefono).then(telefono =>{
         res.send(telefono)  
     })                         
 })
 
 router.put('/:idUsuario/:idTelefono', (req, res) => {
-    dao.modificarTelefono(req.params.idUsuario, req.params.idTelefono, req.body).then(usuario => {
-        res.send(usuario)
+    dao.modificarTelefono(req.params.idUsuario, req.params.idTelefono, req.body).then(telefono => {
+        res.send(telefono)
     })
 })
 

@@ -1,31 +1,44 @@
 import dao from './DAO.js'
 import express from 'express'
+import _ from 'underscore'
 
 const router = express.Router()
 
 router.get('/', (req, res) => {
     let resultado = null   
-    dao.obtenerTodos().then(lista =>{
-        resultado = lista
+    if(_.isEmpty(req.query)){           
+        dao.obtenerTodos().then(lista =>{
+            resultado = lista
+            res.send(resultado)  
+        }) 
+    }    
+    else if(req.query.idUsuario){
+        dao.obtenerDireccionesPorUsuario(req.query.idUsuario).then(lista => {
+            resultado = lista
+            res.send(resultado)
+        })
+    }
+    else{
+        resultado = msj.errorParams()
         res.send(resultado)  
-    })                         
+    }                          
 })
 
-router.post('/:idUsuario', (req, res) => {
-    dao.agregarDireccion(req.params.idUsuario, req.body).then(direccion =>{
+router.post('/', (req, res) => {
+    dao.agregarDireccion(req.body).then(direccion =>{
         res.send(direccion)  
     })                         
 })
 
 router.delete('/:idUsuario/:idDireccion', (req, res) => { 
-    dao.eliminarDireccion(req.params.idUsuario, req.params.idDireccion).then(telefono =>{
-        res.send(telefono)  
+    dao.eliminarDireccion(req.params.idUsuario, req.params.idDireccion).then(direccion =>{
+        res.send(direccion)  
     })                         
 })
 
 router.put('/:idUsuario/:idDireccion', (req, res) => {
-    dao.modificarDireccion(req.params.idUsuario, req.params.idDireccion, req.body).then(usuario => {
-        res.send(usuario)
+    dao.modificarDireccion(req.params.idUsuario, req.params.idDireccion, req.body).then(direccion => {
+        res.send(direccion)
     })
 })
 

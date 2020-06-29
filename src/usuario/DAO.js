@@ -1,15 +1,16 @@
 import getConexion from '../../db/conexionDB.js'
 import Joi from '@hapi/joi'
 import msj from '../mensajes/mensajes.js'
+import pedidoDao from '../pedido/DAO.js'
 
 
 const tabla = 'USUARIOS'
 const tablaTel = 'TELEFONOS'
 const tablaDir = 'DIRECCIONES'
 
-/* ----------------------------
---------------CRUD-------------
-------------------------------- */
+/* -----------------------------
+--------------CRUD--------------
+-------------------------------- */
 
 async function obtenerTodos() {  
     const conn = getConexion()
@@ -44,16 +45,14 @@ async function agregarUsuario(usuario){
     if(validarUsuario(usuarioFin) && validarTelefonos(telefonos) && validarDireccion(direccion)){
         if(!await esDuplicado(usuarioFin)){
             try{            
-                resultado = await conn.insert(usuarioFin).into(tabla)
-                const usuarioNew = await conn.max({ id_usuario: 'id_usuario' }).from(tabla).where('id_usuario','=',usuarioFin.id_usuario)
-                const idUsuario = usuarioNew[0].id_usuario
+                await conn.insert(usuarioFin).into(tabla)
                 for (let i = 0; i < telefonos.length; i++) {
-                    telefonos[i]["id_usuario"] = idUsuario
                     await conn.insert(telefonos[i]).into(tablaTel)
                 }
 
                 await conn.insert(direccion).into(tablaDir)
 
+                resultado = msj.mensajePost()
             }
             catch(error){
                 console.log(error)
@@ -76,25 +75,37 @@ async function eliminarUsuario(idUsuario){
     let uEliminado
     let tEliminados
     let dElimanadas
-    try{
-        tEliminados = await conn.del().where("id_usuario", "=", idUsuario).from(tablaTel)
-        dElimanadas = await conn.del().where("id_usuario", "=", idUsuario).from(tablaDir)
-        uEliminado = await conn.del().where("id_usuario", "=", idUsuario).from(tabla)
-        if(tEliminados < 1){
-            resultado = msj.mensajeCustom(400, "Error al borrar telefonos")
-        }
-        else if(dElimanadas < 1){
-            resultado = msj.mensajeCustom(400, "Error al borrar direcciones")
-        }
-        else if(uEliminado < 1){
-            resultado = msj.mensajeCustom(400, "Intenta borrar un usuario inexistente")
+    let existe = await conn.select().where("id_usuario", "=", idUsuario).from(tabla)
+    let pedidos = await pedidoDao.obtenerPedidosPorUsuario(idUsuario)
+    if(existe.length > 0){
+        if(pedidos.length == 0){
+            try{
+                tEliminados = await conn.del().where("id_usuario", "=", idUsuario).from(tablaTel)
+                dElimanadas = await conn.del().where("id_usuario", "=", idUsuario).from(tablaDir)
+                uEliminado = await conn.del().where("id_usuario", "=", idUsuario).from(tabla)
+                if(tEliminados < 1){
+                    resultado = msj.mensajeCustom(400, "Error al borrar telefonos")
+                }
+                else if(dElimanadas < 1){
+                    resultado = msj.mensajeCustom(400, "Error al borrar direcciones")
+                }
+                else if(uEliminado < 1){
+                    resultado = msj.mensajeCustom(400, "Intenta borrar un usuario inexistente")
+                }
+                else{
+                    resultado = msj.mensajeDelete()
+                }
+            }
+            catch(error){
+                console.log(error)
+            }
         }
         else{
-            resultado = msj.mensajeDelete()
+            resultado = msj.mensajeCustom(500, "El Usuario tiene un pedido realizado")
         }
     }
-    catch(error){
-        console.log(error)
+    else{
+        resultado = msj.mensajeCustom(404, "Usuario inexistente")
     }
     return resultado
 }
@@ -103,16 +114,21 @@ async function modificarUsuario(id_usuario, usuario){
     const conn = getConexion()
     let resultado = null
     let existe
-    try{
-        existe = await conn.update(usuario).where('id_usuario', '=', id_usuario).from(tabla)
-        if (existe == 1) {
-            resultado = msj.mensajePut()
+    if(validarUsuario(usuario)){
+        try{
+            existe = await conn.update(usuario).where('id_usuario', '=', id_usuario).from(tabla)
+            if (existe == 1) {
+                resultado = msj.mensajePut()
+            }
+            else {
+                resultado = msj.errorNoEncontrado()
+            }
+        }catch(error){
+            console.log(error)
         }
-        else {
-            resultado = msj.errorNoEncontrado()
-        }
-    }catch(error){
-        console.log(error)
+    }
+    else{
+        resultado = msj.errorBody()
     }
     return resultado
 }
@@ -139,6 +155,7 @@ function separarTelefonos(usuario) {
     const listaTelefonos = []
     for (let i = 0; i < usuario.telefonos.length; i++) { 
         const nroTel = {
+            "id_usuario": usuario.id_usuario,
             "telefono": usuario.telefonos[i].telefono,
             "descripcion": usuario.telefonos[i].descripcion
         }
@@ -150,7 +167,7 @@ function separarTelefonos(usuario) {
 function separarDireccion(usuario){
     const direccion = {
         "id_direccion": usuario.direccion.id_direccion,
-        "id_usuario": usuario.direccion.id_usuario,
+        "id_usuario": usuario.id_usuario,
         "calle": usuario.direccion.calle,
         "numero": usuario.direccion.numero,
         "piso": usuario.direccion.piso,
@@ -180,7 +197,7 @@ function validarUsuario(usuario) {
 
     const { error } = Joi.validate(usuario, usuarioSchema)
     if (error) {
-        console.log('error validate')
+        console.log('Error al validar usuario')
         return false        
     }
     console.log('Usuario Valido')
@@ -189,6 +206,7 @@ function validarUsuario(usuario) {
 
 function validarTelefonos(telefonos){
     const telefonoSchema = {
+        id_usuario: Joi.number().required(),
         telefono: Joi.number().required(),
         descripcion: Joi.string(),
     }
@@ -196,8 +214,8 @@ function validarTelefonos(telefonos){
         const tel = telefonos[i];
         const { error } = Joi.validate(tel, telefonoSchema)
         if (error) {
-            console.log('error al validar telefono')
-            return false        
+            console.log('Error al validar telefono')
+            return false
         } 
     }
     console.log('Telefonos valido')
