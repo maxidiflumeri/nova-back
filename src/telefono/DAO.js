@@ -84,10 +84,10 @@ async function modificarTelefono(idUsuario, idTelefono, telefono){
             existe = await conn.update(telefono).where('id_usuario', '=', idUsuario)
             .andWhere("telefono", "=", idTelefono).from(tabla)
             if (existe == 1) {
-                resultado = msj.mensajeCustom(200, "Telefono modificado con exito")
+                resultado = msj.mensajePut()
             }
             else {
-                resultado = msj.mensajeCustom(404, "telefono no encontrado")
+                resultado = msj.errorNoEncontrado()
             }
         }catch(error){
             console.log(error)

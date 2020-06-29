@@ -59,8 +59,7 @@ async function agregarUsuario(usuario){
             }
         }
         else{
-            console.log("Estado: " + msj.errorDuplicados().estado)
-            console.log("Mesaje: " + msj.errorDuplicados().mensaje)
+            resultado = msj.errorDuplicados()
         }
     }else{
         resultado = msj.errorBody()
@@ -90,7 +89,7 @@ async function eliminarUsuario(idUsuario){
                     resultado = msj.mensajeCustom(400, "Error al borrar direcciones")
                 }
                 else if(uEliminado < 1){
-                    resultado = msj.mensajeCustom(400, "Intenta borrar un usuario inexistente")
+                    resultado = msj.mensajeCustom(400, "Error al borrar un usuario")
                 }
                 else{
                     resultado = msj.mensajeDelete()
@@ -105,7 +104,7 @@ async function eliminarUsuario(idUsuario){
         }
     }
     else{
-        resultado = msj.mensajeCustom(404, "Usuario inexistente")
+        resultado = msj.errorNoEncontrado()
     }
     return resultado
 }
@@ -192,7 +191,7 @@ function validarUsuario(usuario) {
         clave: Joi.string().required(),
         administrador: Joi.string().required(),
         fecha_nacimiento: Joi.string(),
-        sexo: Joi.string()
+        sexo: Joi.string().length(1)
     }
 
     const { error } = Joi.validate(usuario, usuarioSchema)

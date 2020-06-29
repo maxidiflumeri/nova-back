@@ -84,10 +84,10 @@ async function modificarDireccion(idUsuario, idDireccion, direccion){
             existe = await conn.update(direccion).where('id_usuario', '=', idUsuario)
             .andWhere("id_direccion", "=", idDireccion).from(tabla)
             if (existe == 1) {
-                resultado = msj.mensajeCustom(200, "Modificado con exito")
+                resultado = msj.mensajePut()
             }
             else {
-                resultado = msj.mensajeCustom(404, "direccion no encontrada")
+                resultado = msj.errorNoEncontrado()
             }
         }catch(error){
             console.log(error)
