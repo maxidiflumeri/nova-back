@@ -73,8 +73,8 @@ async function testAgregarProducto(cli) {
     {
         ID_TIPO: 1,
         ID_MARCA: 3,
-        MODELO: 'I2 400',
-        DESCRIPCION: 'Microprocesador Intel i2 400',
+        MODELO: 'I9 400',
+        DESCRIPCION: 'Microprocesador Intel i9 400',
         STOCK: 5,
         PRECIO: 15000,
         CANT_VISITAS: 0,
@@ -141,7 +141,7 @@ async function testModificarProductoErroneo(cli) {
 
 //TEST OK - Eliminar Producto por id
 async function testEliminarProducto(cli) {
-    let rta = await cli.eliminarProducto(88)
+    let rta = await cli.eliminarProducto(89)
     console.log("\nEliminar producto:")
     console.log(rta)
   
