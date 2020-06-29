@@ -16,6 +16,9 @@ router.get('/', (req, res) => {
     else if(req.query.idUsuario){
         dao.obtenerUsuarioPorId(req.query.idUsuario).then(lista => {
             resultado = lista
+            if(resultado.length == 0){
+                resultado = msj.mensajeSinResultados()
+            }
             res.send(resultado)
         })
     }

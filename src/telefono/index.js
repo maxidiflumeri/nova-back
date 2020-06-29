@@ -1,6 +1,7 @@
 import dao from './DAO.js'
 import express from 'express'
 import _ from 'underscore'
+import msj from '../mensajes/mensajes.js'
 
 const router = express.Router()
 
@@ -15,6 +16,9 @@ router.get('/', (req, res) => {
     else if(req.query.idUsuario){
         dao.obtenerTelefonosPorUsuario(req.query.idUsuario).then(lista => {
             resultado = lista
+            if(resultado.length == 0){
+                resultado = msj.mensajeSinResultados()
+            }
             res.send(resultado)
         })
     }
