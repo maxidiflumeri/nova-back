@@ -11,10 +11,10 @@ router.get('/', (req, res) => {
         dao.obtenerTodos().then(lista =>{
             resultado = lista
             res.send(resultado)  
-        })
+        }) 
     }    
     else if(req.query.idUsuario){
-        dao.obtenerUsuarioPorId(req.query.idUsuario).then(lista => {
+        dao.obtenerTelefonosPorUsuario(req.query.idUsuario).then(lista => {
             resultado = lista
             if(resultado.length == 0){
                 resultado = msj.mensajeSinResultados()
@@ -25,29 +25,25 @@ router.get('/', (req, res) => {
     else{
         resultado = msj.errorParams()
         res.send(resultado)  
-    }         
+    }                      
 })
 
 router.post('/', (req, res) => {
-    let resultado = null   
-    dao.agregarUsuario(req.body).then(lista =>{
-        resultado = lista
-        res.send(resultado)  
+    dao.agregarTelefono(req.body).then(telefono =>{
+        res.send(telefono)  
     })                         
 })
 
-router.delete('/:id_usuario', (req, res) => {
-    dao.eliminarUsuario(req.params.id_usuario).then(usuario => {
-        res.send(usuario)
-    })
+router.delete('/:idUsuario/:telefono', (req, res) => {
+    dao.eliminarTelefono(req.params.idUsuario, req.params.telefono).then(telefono =>{
+        res.send(telefono)  
+    })                         
 })
 
-router.put('/:idUsuario', (req, res) => {
-    dao.modificarUsuario(req.params.idUsuario, req.body).then(usuario => {
-        res.send(usuario)
+router.put('/:idUsuario/:idTelefono', (req, res) => {
+    dao.modificarTelefono(req.params.idUsuario, req.params.idTelefono, req.body).then(telefono => {
+        res.send(telefono)
     })
-
-
 })
 
 export default router

@@ -11,6 +11,8 @@ const main = () =>{
     app.use('/api/productos', router.producto)
     app.use('/api/tiposProducto', router.tipoProducto)
     app.use('/api/usuarios', router.usuario)
+    app.use('/api/direcciones', router.direccion)
+    app.use('/api/telefonos', router.telefono)
 
     return app
 

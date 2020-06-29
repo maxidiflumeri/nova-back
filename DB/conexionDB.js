@@ -1,4 +1,3 @@
-import sql from "mssql";
 import knexLib from 'knex'
 
 let conexionDb = null
@@ -29,5 +28,5 @@ function crearConexion(){
     return knex
 }
 
-
 export default getConexion
+

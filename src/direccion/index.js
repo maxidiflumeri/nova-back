@@ -11,10 +11,10 @@ router.get('/', (req, res) => {
         dao.obtenerTodos().then(lista =>{
             resultado = lista
             res.send(resultado)  
-        })
+        }) 
     }    
     else if(req.query.idUsuario){
-        dao.obtenerUsuarioPorId(req.query.idUsuario).then(lista => {
+        dao.obtenerDireccionesPorUsuario(req.query.idUsuario).then(lista => {
             resultado = lista
             if(resultado.length == 0){
                 resultado = msj.mensajeSinResultados()
@@ -25,29 +25,25 @@ router.get('/', (req, res) => {
     else{
         resultado = msj.errorParams()
         res.send(resultado)  
-    }         
+    }                          
 })
 
 router.post('/', (req, res) => {
-    let resultado = null   
-    dao.agregarUsuario(req.body).then(lista =>{
-        resultado = lista
-        res.send(resultado)  
+    dao.agregarDireccion(req.body).then(direccion =>{
+        res.send(direccion)  
     })                         
 })
 
-router.delete('/:id_usuario', (req, res) => {
-    dao.eliminarUsuario(req.params.id_usuario).then(usuario => {
-        res.send(usuario)
-    })
+router.delete('/:idUsuario/:idDireccion', (req, res) => { 
+    dao.eliminarDireccion(req.params.idUsuario, req.params.idDireccion).then(direccion =>{
+        res.send(direccion)  
+    })                         
 })
 
-router.put('/:idUsuario', (req, res) => {
-    dao.modificarUsuario(req.params.idUsuario, req.body).then(usuario => {
-        res.send(usuario)
+router.put('/:idUsuario/:idDireccion', (req, res) => {
+    dao.modificarDireccion(req.params.idUsuario, req.params.idDireccion, req.body).then(direccion => {
+        res.send(direccion)
     })
-
-
 })
 
 export default router
