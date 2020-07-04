@@ -54,12 +54,21 @@ function mensajeSinResultados(){
     }
 }
 
+function mensajeFallaLogin(){
+    return{
+        "estado": 200,
+        "mensaje": "Usuario o clave incorrecta."
+    }
+}
+
 function mensajeCustom(estado, mensaje){
     return{
         "estado": estado,
         "mensaje": mensaje
     }
 }
+
+
 
 export default {    
     errorBody,
@@ -70,5 +79,6 @@ export default {
     mensajePut,
     mensajeDelete,
     mensajeSinResultados,
-    mensajeCustom
+    mensajeCustom,
+    mensajeFallaLogin
 }
