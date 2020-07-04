@@ -61,6 +61,21 @@ function mensajeFallaLogin(){
     }
 }
 
+function mensajeRutaNoAutorizada(authData) {
+    return{
+        "estado": 403,
+        "mensaje": "Usuario no autorizado para acceder a esta ruta",
+        "authData": authData
+    }    
+}
+
+function tokenInexistente(){
+    return{
+        "estado": 403,
+        "mensaje": "Token Inexistente."
+    }
+}
+
 function mensajeCustom(estado, mensaje){
     return{
         "estado": estado,
@@ -80,5 +95,7 @@ export default {
     mensajeDelete,
     mensajeSinResultados,
     mensajeCustom,
-    mensajeFallaLogin
+    mensajeFallaLogin,
+    mensajeRutaNoAutorizada,
+    tokenInexistente
 }

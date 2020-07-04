@@ -13,6 +13,7 @@ const main = () =>{
     app.use('/api/usuarios', router.usuario)
     app.use('/api/direcciones', router.direccion)
     app.use('/api/telefonos', router.telefono)
+    app.use('/api/login', router.login)
 
     return app
 

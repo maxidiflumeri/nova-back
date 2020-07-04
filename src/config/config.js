@@ -13,9 +13,9 @@ dotenv.config({
 export default {
   NODE_ENV: process.env.NODE_ENV || 'development',
   HOST: process.env.HOST || '127.0.0.1',
-  PORT: process.env.PORT || 8000,
-  SERVER: process.env.SERVER,
-  DATABASE: process.env.DATABASE,
-  USER: process.env.USER,
-  PASSWORD: process.env.PASSWORD
+  PORT: process.env.PORT || 5000,
+  SERVER: process.env.SERVER || 'srvnova.database.windows.net',
+  DATABASE: process.env.DATABASE || 'nova-db-dev',
+  USER: process.env.USER || 'nova',
+  PASSWORD: process.env.PASSWORD || 'Nov42020'
 }
