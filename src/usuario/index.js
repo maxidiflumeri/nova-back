@@ -22,6 +22,15 @@ router.get('/', (req, res) => {
             res.send(resultado)
         })
     }
+    else if(req.query.correo && req.query.clave){
+        dao.obtenerUsuarioPorMailClave(req.query.correo, req.query.clave).then(lista => {
+            resultado = lista
+            if(resultado.length == 0){
+                resultado = msj.mensajeSinResultados()
+            }
+            res.send(resultado)
+        })
+    }
     else{
         resultado = msj.errorParams()
         res.send(resultado)  

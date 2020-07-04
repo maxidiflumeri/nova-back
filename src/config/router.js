@@ -6,6 +6,7 @@ import tipoProducto from '../tipo-producto/index.js'
 import usuario from '../usuario/index.js'
 import direccion from '../direccion/index.js'
 import telefono from '../telefono/index.js'
+import login from '../login/index.js'
 
 export default{
     estado,
@@ -15,5 +16,6 @@ export default{
     tipoProducto,
     usuario,
     direccion,
-    telefono
+    telefono,
+    login
 }
