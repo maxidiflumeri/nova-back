@@ -36,6 +36,18 @@ async function obtenerUsuarioPorId(id) {
     return lista    
 }
 
+async function obtenerUsuarioPorMailClave(correo, clave) {  
+    const conn = getConexion()
+    let lista = []
+    try{         
+        lista =  await conn.select().from(tabla).where('correo','=',correo).andWhere('clave','=',clave)
+    }
+    catch(error){
+        console.log(error)
+    }
+    return lista    
+}
+
 async function agregarUsuario(usuario){
     const conn = getConexion()
     let resultado = null
@@ -264,6 +276,7 @@ async function esDuplicado(usuario){
 export default{
     obtenerTodos,
     obtenerUsuarioPorId,
+    obtenerUsuarioPorMailClave,
     agregarUsuario,
     eliminarUsuario,
     modificarUsuario
