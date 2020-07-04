@@ -1,9 +1,21 @@
 import request from 'request-promise-native'
 
 function crearCliente(path, port) {
-    const serverPath = path + ':' + port
+    const serverPath = 'http://'+ path + ':' + port
 
     const apiPath = '/api/productos'
+    const apiPathLogin = '/api/login'
+
+
+    async function login(objeto){
+        const options = {
+            method: 'post',
+            uri: serverPath + apiPathLogin,
+            body: objeto,
+            json: true,             
+        }
+        return await request(options)
+    }
 
     async function obtenerTodos() {
 
@@ -65,11 +77,14 @@ function crearCliente(path, port) {
         return await request(options)
     }
 
-    async function agregarProducto(producto) {
+    async function agregarProducto(producto, token) {
 
         const options = {
             method: 'post',
             uri: serverPath + apiPath,
+            headers: {
+                Authorization: `Bearer ${token}`
+            },
             body: producto,
             json: true
         }
@@ -77,11 +92,14 @@ function crearCliente(path, port) {
         return await request(options)
     }
 
-    async function modificarProducto(id, producto) {
+    async function modificarProducto(id, producto, token) {
 
         const options = {
             method: 'put',
             uri: serverPath + apiPath + '/' + id,
+            headers: {
+                Authorization: `Bearer ${token}`
+            },
             body: producto,
             json: true
         }
@@ -89,11 +107,14 @@ function crearCliente(path, port) {
         return await request(options)
     }
 
-    async function eliminarProducto(id) {
+    async function eliminarProducto(id, token) {
 
         const options = {
             method: 'delete',
             uri: serverPath + apiPath + '/' + id,
+            headers: {
+                Authorization: `Bearer ${token}`
+            },
             json: true
         }
 
@@ -101,6 +122,7 @@ function crearCliente(path, port) {
     }
 
     return {
+        login,
         obtenerTodos,
         obtenerProductoPorId,
         obtenerProductoPorModelo,

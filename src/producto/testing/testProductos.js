@@ -1,5 +1,22 @@
 import crearServidor from '../../config/server.js'
 import crearCliente from './clientProductos.js'
+import config from '../../config/config.js'
+
+
+async function testLogin(cli) {
+    // ES ADMIN
+    let usuario = {
+        usuario: 'santucastro@live.com.ar',
+        password: '12345'
+    }
+    // NO ES ADMIN
+    // let usuario = {
+    //     usuario: 'ezelaboranti@hotmail.com',
+    //     password: '1234'
+    // }
+    let rta = await cli.login(usuario)
+    return rta.token
+}
 
 //TEST OK - Obtener todos los productos
 async function testObtenerTodos(cli) {
@@ -11,7 +28,7 @@ async function testObtenerTodos(cli) {
 //TEST OK - Obtener producto por id especifico
 async function testobtenerProductoPorId(cli) {
     let rta = await cli.obtenerProductoPorId(1)
- 
+
     console.log("\nBusqueda por Id Producto: ")
     console.log(rta)
 }
@@ -67,14 +84,14 @@ async function testobtenerProductoPorIdMarcaErroneo(cli) {
 }
 
 //TEST OK - Agregar Producto
-async function testAgregarProducto(cli) {
+async function testAgregarProducto(cli, token) {
     console.log("\nAgregar Producto:")
     let producto =
     {
         ID_TIPO: 1,
         ID_MARCA: 3,
-        MODELO: 'I9 400',
-        DESCRIPCION: 'Microprocesador Intel i9 400',
+        MODELO: 'I40 400',
+        DESCRIPCION: 'Microprocesador Intel i40 400',
         STOCK: 5,
         PRECIO: 15000,
         CANT_VISITAS: 0,
@@ -83,12 +100,12 @@ async function testAgregarProducto(cli) {
         FOTO3: 'vacio'
 
     }
-    let rta = await cli.agregarProducto(producto)
+    let rta = await cli.agregarProducto(producto, token)
 
 }
 
 //TEST FALLIDO - Agregar Producto --> No se envia descripcion
-async function testAgregarProductoErroneo(cli) {
+async function testAgregarProductoErroneo(cli, token) {
     console.log("\nTest Fallido Agregar Producto:")
     let producto =
     {
@@ -101,12 +118,12 @@ async function testAgregarProductoErroneo(cli) {
         CANT_VISITAS: 0
 
     }
-    let rta = await cli.agregarProducto(producto)
+    let rta = await cli.agregarProducto(producto, token)
 
 }
 
 //TEST OK - Modificar Producto
-async function testModificarProducto(cli) {
+async function testModificarProducto(cli, token) {
     console.log("\nModificar Producto: ")
     let producto = {
         ID_TIPO: 1,
@@ -118,12 +135,12 @@ async function testModificarProducto(cli) {
         CANT_VISITAS: 0,
         FECHA_INGRESO: '2020-06-16T00:00:00.000Z'
     }
-    let rta = await cli.modificarProducto(79, producto)
+    let rta = await cli.modificarProducto(79, producto, token)
 
 }
 
 //TEST FALLIDO - Modificar Producto  --> no se envia id tipo y marca y el id producto no existe
-async function testModificarProductoErroneo(cli) {
+async function testModificarProductoErroneo(cli, token) {
     console.log("\nTest Fallido Modificar Producto: ")
     let producto = {
         ID_TIPO: 1000,
@@ -135,25 +152,25 @@ async function testModificarProductoErroneo(cli) {
         CANT_VISITAS: 0,
         FECHA_INGRESO: '2020-06-16T00:00:00.000Z'
     }
-    let rta = await cli.modificarProducto(1, producto)
+    let rta = await cli.modificarProducto(1, producto, token)
 
 }
 
 //TEST OK - Eliminar Producto por id
-async function testEliminarProducto(cli) {
-    let rta = await cli.eliminarProducto(89)
+async function testEliminarProducto(cli, token) {
+    let rta = await cli.eliminarProducto(92,token)
     console.log("\nEliminar producto:")
     console.log(rta)
-  
+
 }
 
 
 //TEST FALLIDO - Eliminar Producto por id que no existe
-async function testEliminarProductoErroneo(cli) {
-    let rta = await cli.eliminarProducto(150)
+async function testEliminarProductoErroneo(cli, token) {
+    let rta = await cli.eliminarProducto(150,token)
     console.log("\nTest Fallido Eliminar producto:")
     console.log(rta)
-    
+
 }
 
 
@@ -182,16 +199,16 @@ async function main() {
     const app = crearServidor()
     const url = 'http://localhost'
     const PORT = 8080
-    const server = app.listen(PORT, async () => {
-        console.log(`Servidor express escuchando en el puerto ${PORT}`)
-        const actualPort = server.address().port
-        const cli = crearCliente(url, actualPort)
+    const server = app.listen(config.PORT, config.HOST, async () => {
+        console.log(`Servidor express escuchando en el puerto ${config.PORT}`)
+
+        const cli = crearCliente(config.HOST, config.PORT)
+
+        const token = await testLogin(cli)
 
         for (const test of tests) {
-            await test(cli)
-
+            await test(cli, token)
         }
-
     })
 
 }
