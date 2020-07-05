@@ -11,7 +11,6 @@ const router = express.Router()
 router.get('/', tk.verificarToken, (req, res) => {
     jwt.verify(req.token, 'claveSecreta', (error, authData) => {
         if(!error && authData.user[0].ADMINISTRADOR == 'S'){
-            console.log("error: " + error)            
             if (_.isEmpty(req.query)) {
                 dao.obtenerTodos().then(lista => {
                     if (lista.length > 0)

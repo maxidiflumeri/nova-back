@@ -7,8 +7,6 @@ const router = express.Router()
 
 router.post("/", (req, res) => {    
     usuarios.obtenerUsuarioPorMailClave(req.body.usuario, req.body.password).then(user =>{
-        console.log(user)
-        console.log(user.length)
         if (user.length > 0){
             jwt.sign({user}, 'claveSecreta', (err, token) =>{
                 res.send({
@@ -22,6 +20,5 @@ router.post("/", (req, res) => {
         console.log(error)
     })
 })
-
 
 export default router

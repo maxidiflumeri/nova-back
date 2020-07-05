@@ -2,17 +2,17 @@
 import request from 'request-promise-native'
 
 function crearCliente(path, port) {
-    const serverPath = 'http://'+ path + ':' + port
+    const serverPath = 'http://' + path + ':' + port
 
     const apiPath = '/api/tiposproducto'
     const apiPathLogin = '/api/login'
 
-    async function login(objeto){
+    async function login(objeto) {
         const options = {
             method: 'post',
             uri: serverPath + apiPathLogin,
             body: objeto,
-            json: true,             
+            json: true,
         }
         return await request(options)
     }
@@ -36,7 +36,7 @@ function crearCliente(path, port) {
             headers: {
                 Authorization: `Bearer ${token}`
             },
-            json: true,            
+            json: true,
             qs: { id: id }
         }
         return await request(options)
@@ -50,7 +50,7 @@ function crearCliente(path, port) {
                 Authorization: `Bearer ${token}`
             },
             json: true,
-            qs: { id_ : id }
+            qs: { id_: id }
         }
         return await request(options)
     }
@@ -63,7 +63,7 @@ function crearCliente(path, port) {
                 Authorization: `Bearer ${token}`
             },
             json: true,
-            qs: { descripcion : desc }
+            qs: { descripcion: desc }
         }
         return await request(options)
     }
@@ -76,7 +76,7 @@ function crearCliente(path, port) {
                 Authorization: `Bearer ${token}`
             },
             json: true,
-            qs: { descripcion_ : desc }
+            qs: { descripcion_: desc }
         }
         return await request(options)
     }
@@ -128,7 +128,7 @@ function crearCliente(path, port) {
         obtenerPorDescripcionFallido,
         agregar,
         eliminar,
-        modificar        
+        modificar
     }
 }
 

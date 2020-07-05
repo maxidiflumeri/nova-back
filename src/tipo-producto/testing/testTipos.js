@@ -7,15 +7,15 @@ let incremental = 10
 
 async function testLogin(cli){
     // ES ADMIN
-    let usuario = {
-        usuario: 'santucastro@live.com.ar',
-        password: '12345'
-    }
-    // NO ES ADMIN
     // let usuario = {
-    //     usuario: 'ezelaboranti@hotmail.com',
-    //     password: '1234'
+    //     usuario: 'santucastro@live.com.ar',
+    //     password: '12345'
     // }
+    // NO ES ADMIN
+    let usuario = {
+        usuario: 'ezelaboranti@hotmail.com',
+        password: '1234'
+    }
     let rta = await cli.login(usuario)
     return rta.token
 }
