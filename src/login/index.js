@@ -10,7 +10,8 @@ router.post("/", (req, res) => {
         if (user.length > 0){
             jwt.sign({user}, 'claveSecreta', (err, token) =>{
                 res.send({
-                    token                
+                    token ,
+                    id_usuario: user[0].ID_USUARIO               
                 })
             })       
         }else{
