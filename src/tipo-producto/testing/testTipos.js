@@ -148,8 +148,7 @@ async function main() {
 
     const app = crearServidor()
     const server = app.listen(config.PORT, config.HOST, async () => {
-        console.log(`Servidor express escuchando en el puerto ${config.PORT}`)
-        
+        console.log(`Servidor express escuchando en el puerto ${config.PORT}`)        
         const cli = crearCliente(config.HOST, config.PORT)
 
         const token = await testLogin(cli)

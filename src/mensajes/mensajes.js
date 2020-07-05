@@ -105,5 +105,5 @@ export default {
     mensajeFallaLogin,
     mensajeRutaNoAutorizada,
     tokenInvalido,
-    tokenInexistente
+    tokenInexistente    
 }

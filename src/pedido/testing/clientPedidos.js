@@ -3,15 +3,29 @@
 import request from 'request-promise-native'
 
 function crearCliente(path, port){
-    const serverPath = path + ':' + port
+    const serverPath = 'http://' + path + ':' + port
 
     const apiPath = '/api/pedidos'
+    const apiPathLogin = '/api/login'
 
-    async function obtenerTodos(){
+    async function login(objeto){
+        const options = {
+            method: 'post',
+            uri: serverPath + apiPathLogin,
+            body: objeto,
+            json: true,             
+        }
+        return await request(options)
+    }
+
+    async function obtenerTodos(token){
 
         const options = {
             method: 'get',
             uri: serverPath + apiPath,
+            headers: {
+                Authorization: `Bearer ${token}`
+            },
             json: true
         }
 
@@ -19,11 +33,14 @@ function crearCliente(path, port){
     }
 
     
-    async function obtenerPorIdUsuario(id){
+    async function obtenerPorIdUsuario(id, token){
 
         const options = {
             method: 'get',
             uri: serverPath + apiPath,
+            headers: {
+                Authorization: `Bearer ${token}`
+            },
             json: true,
             qs: {idUsuario: id }
         }
@@ -32,11 +49,14 @@ function crearCliente(path, port){
     }
 
         
-    async function obtenerDetallesPorIdPedido(id){
+    async function obtenerDetallesPorIdPedido(id, token){
 
         const options = {
             method: 'get',
             uri: serverPath + apiPath,
+            headers: {
+                Authorization: `Bearer ${token}`
+            },
             json: true,
             qs: {idDetalle: id }
         }
@@ -44,11 +64,14 @@ function crearCliente(path, port){
         return await request(options)
     }
 
-    async function obtenerPedidoPorId(id){
+    async function obtenerPedidoPorId(id, token){
 
         const options = {
             method: 'get',
             uri: serverPath + apiPath,
+            headers: {
+                Authorization: `Bearer ${token}`
+            },
             json: true,
             qs: {idPedido: id }
         }
@@ -57,11 +80,14 @@ function crearCliente(path, port){
     }
 
     
-    async function obtenerPedidoPorIdError(id){
+    async function obtenerPedidoPorIdError(id, token){
 
         const options = {
             method: 'get',
             uri: serverPath + apiPath,
+            headers: {
+                Authorization: `Bearer ${token}`
+            },
             json: true,
             qs: {id_Pedido: id }
         }
@@ -69,11 +95,14 @@ function crearCliente(path, port){
         return await request(options)
     }
 
-    async function agregarPedido(pedido){
+    async function agregarPedido(pedido, token){
 
         const options = {
             method: 'post',
             uri: serverPath + apiPath,
+            headers: {
+                Authorization: `Bearer ${token}`
+            },
             body: pedido,
             json: true
         }
@@ -81,11 +110,14 @@ function crearCliente(path, port){
         return await request(options)
     }
 
-    async function modificarPedido(pedido,id){
+    async function modificarPedido(pedido,id, token){
 
         const options = {
             method: 'put',
             uri: serverPath + apiPath + '/' + id,
+            headers: {
+                Authorization: `Bearer ${token}`
+            },
             body: pedido,
             json: true
         }
@@ -93,11 +125,14 @@ function crearCliente(path, port){
         return await request(options)
     }
 
-    async function eliminarPedido(id){
+    async function eliminarPedido(id, token){
 
         const options = {
             method: 'delete',
             uri: serverPath + apiPath + '/' + id,
+            headers: {
+                Authorization: `Bearer ${token}`
+            },
             json: true
         }
 
@@ -114,7 +149,8 @@ function crearCliente(path, port){
         agregarPedido,
         modificarPedido,
         eliminarPedido,
-        obtenerPedidoPorIdError
+        obtenerPedidoPorIdError,
+        login
     }
 
 }
