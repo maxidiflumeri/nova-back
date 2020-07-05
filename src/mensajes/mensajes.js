@@ -76,6 +76,13 @@ function tokenInexistente(){
     }
 }
 
+function tokenInvalido(){
+    return{
+        "estado": 403,
+        "mensaje": "Token inválido."
+    }
+}
+
 function mensajeCustom(estado, mensaje){
     return{
         "estado": estado,
@@ -97,5 +104,6 @@ export default {
     mensajeCustom,
     mensajeFallaLogin,
     mensajeRutaNoAutorizada,
+    tokenInvalido,
     tokenInexistente
 }

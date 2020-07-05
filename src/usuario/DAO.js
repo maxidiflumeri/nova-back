@@ -1,3 +1,4 @@
+//TOMAS MELENDEZ
 import getConexion from '../../db/conexionDB.js'
 import Joi from '@hapi/joi'
 import msj from '../mensajes/mensajes.js'
@@ -12,7 +13,7 @@ const tablaDir = 'DIRECCIONES'
 --------------CRUD--------------
 -------------------------------- */
 
-async function obtenerTodos() {  
+async function obtenerTodos() {  //admin
     const conn = getConexion()
     let lista = []
     try{        
@@ -24,7 +25,7 @@ async function obtenerTodos() {
     return lista  
 }
 
-async function obtenerUsuarioPorId(id) {  
+async function obtenerUsuarioPorId(id) {  //usuario
     const conn = getConexion()
     let lista = []
     try{         
@@ -36,7 +37,7 @@ async function obtenerUsuarioPorId(id) {
     return lista    
 }
 
-async function obtenerUsuarioPorMailClave(correo, clave) {  
+async function obtenerUsuarioPorMailClave(correo, clave) {  //usuario
     const conn = getConexion()
     let lista = []
     try{         
@@ -48,7 +49,7 @@ async function obtenerUsuarioPorMailClave(correo, clave) {
     return lista    
 }
 
-async function agregarUsuario(usuario){
+async function agregarUsuario(usuario){ //TODOS
     const conn = getConexion()
     let resultado = null
     const usuarioFin = separarUsuario(usuario)
@@ -80,7 +81,7 @@ async function agregarUsuario(usuario){
     return resultado
 }
 
-async function eliminarUsuario(idUsuario){
+async function eliminarUsuario(idUsuario){ //ADMIN
     const conn = getConexion()
     let resultado = null
     let uEliminado
@@ -121,7 +122,7 @@ async function eliminarUsuario(idUsuario){
     return resultado
 }
 
-async function modificarUsuario(id_usuario, usuario){
+async function modificarUsuario(id_usuario, usuario){ //usuario
     const conn = getConexion()
     let resultado = null
     let existe
@@ -208,10 +209,10 @@ function validarUsuario(usuario) {
 
     const { error } = Joi.validate(usuario, usuarioSchema)
     if (error) {
-        console.log('Error al validar usuario')
+        /* console.log('Error al validar usuario') */
         return false        
     }
-    console.log('Usuario Valido')
+    /* console.log('Usuario Valido') */
     return true
 }
 
@@ -225,11 +226,11 @@ function validarTelefonos(telefonos){
         const tel = telefonos[i];
         const { error } = Joi.validate(tel, telefonoSchema)
         if (error) {
-            console.log('Error al validar telefono')
+            /* console.log('Error al validar telefono') */
             return false
         } 
     }
-    console.log('Telefonos valido')
+    /* console.log('Telefonos valido') */
     return true
 }
 
@@ -248,11 +249,11 @@ function validarDireccion(direcciones){
     
     const { error } = Joi.validate(direcciones, direccionSchema)
     if (error) {
-        console.log('error al validar direccion')
+        /* console.log('error al validar direccion') */
         return false        
     } 
     
-    console.log('Direccion valida')
+    /* console.log('Direccion valida') */
     return true
 }
 

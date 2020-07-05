@@ -1,3 +1,4 @@
+//TOMAS MELENDEZ
 import getConexion from '../../db/conexionDB.js'
 import Joi from '@hapi/joi'
 import msj from '../mensajes/mensajes.js'
@@ -79,6 +80,7 @@ async function modificarTelefono(idUsuario, idTelefono, telefono){
     const conn = getConexion()
     let resultado = null
     let existe
+    telefono["id_usuario"] = idUsuario
     if(validarTelefono(telefono)){
         try{
             existe = await conn.update(telefono).where('id_usuario', '=', idUsuario)

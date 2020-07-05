@@ -1,14 +1,29 @@
+//TOMAS MELENDEZ
 import request from 'request-promise-native'
 
 function crearCliente(path, port){
-    const serverPath = path + ':' + port
+    const serverPath = 'http://'+ path + ':' + port
 
     const apiPath = '/api/usuarios'
+    const apiPathLogin = '/api/login'
 
-    async function obtenerTodos(){
+    async function login(objeto){
+        const options = {
+            method: 'post',
+            uri: serverPath + apiPathLogin,
+            body: objeto,
+            json: true,             
+        }
+        return await request(options)
+    }
+
+    async function obtenerTodos(token){
         const options = {
             method: 'get',
             uri: serverPath + apiPath,
+            headers: {
+                Authorization: `Bearer ${token}`
+            },
             json: true
         }
 
@@ -16,10 +31,13 @@ function crearCliente(path, port){
     }
 
     
-    async function obtenerUsuarioPorId(idUsuario){
+    async function obtenerUsuarioPorId(idUsuario, token){
         const options = {
             method: 'get',
             uri: serverPath + apiPath,
+            headers: {
+                Authorization: `Bearer ${token}`
+            },
             json: true,
             qs: {idUsuario: idUsuario }
         }
@@ -27,10 +45,13 @@ function crearCliente(path, port){
         return await request(options)
     }
 
-    async function agregarUsuario(usuario){
+    async function agregarUsuario(usuario, token){
         const options = {
             method: 'post',
             uri: serverPath + apiPath,
+            headers: {
+                Authorization: `Bearer ${token}`
+            },
             body: usuario,
             json: true
         }
@@ -38,10 +59,13 @@ function crearCliente(path, port){
         return await request(options)
     }
 
-    async function modificarUsuario(idUsuario,usuario){
+    async function modificarUsuario(idUsuario,usuario, token){
         const options = {
             method: 'put',
             uri: serverPath + apiPath + '/' + idUsuario,
+            headers: {
+                Authorization: `Bearer ${token}`
+            },
             body: usuario,
             json: true
         }
@@ -49,10 +73,13 @@ function crearCliente(path, port){
         return await request(options)
     }
 
-    async function eliminarUsuario(idUsuario){
+    async function eliminarUsuario(idUsuario, token){
         const options = {
             method: 'delete',
             uri: serverPath + apiPath + '/' + idUsuario,
+            headers: {
+                Authorization: `Bearer ${token}`
+            },
             json: true
         }
 
@@ -62,6 +89,7 @@ function crearCliente(path, port){
 
 
     return {
+        login,
         obtenerTodos,
         obtenerUsuarioPorId,
         agregarUsuario,
